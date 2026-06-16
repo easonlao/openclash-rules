@@ -1,0 +1,45 @@
+---
+title: OpenClash 规则重写状态
+area: project
+purpose: status
+lifecycle: active
+created: 2026-06-16
+updated: 2026-06-16T21:52
+tags:
+  - openclash
+  - clash
+  - rules
+---
+
+# OpenClash 规则重写状态
+
+## 当前状态
+
+已建立本地重写工作台，并已初始化为独立 Git 仓库。当前处于逐组确认阶段，正在等待确认第 1 组“基础策略组与通用选择”。
+
+初始提交暂未完成：本机 Git 未配置提交身份 `user.name` / `user.email`。
+
+## 已确认事实
+
+- 当前模板没有链式代理模块。
+- 当前模板缺少通用总控组。
+- 当前模板的业务组默认继承 `default`，而 `default` 第一项是 `直连`。
+- 当前模板没有通用广告拒绝规则。
+- liandu2024 的 `Block.list` 只包含 Adobe 相关域名，不是广告规则。
+- liandu2024 的自定义规则存在个人偏好，应按组拆开审查。
+- 用户确认：`03-项目/` 下的具体项目可以使用独立 Git 仓库进行版本控制，不等同于 OrbitOS 根仓库边界。
+
+## 待确认
+
+- 第 1 组：基础策略组与通用选择。
+
+## 可继续
+
+- 配置该项目仓库的本地 Git 提交身份后，完成初始提交。
+- 确认第 1 组后，继续第 2 组：国内、私有网络、自用直连。
+
+## 来源
+
+- [[../../02-时间线/今日]]
+- Event：`evt_20260616_214450_codex_openclash_rules_rewrite_start`
+- 本项目 README：[[README|OpenClash 规则重写]]
