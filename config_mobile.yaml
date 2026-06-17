@@ -1,0 +1,369 @@
+# ========================================
+# OpenClash 配置文件 - 手机统一版（Clash Mi 用）
+# ========================================
+# 最后更新: 2026-06-17
+# 包含: 回家代理 + *.l-home.top 直连规则
+# 设计原则:
+#   1. 除了 AI 服务单独策略组，其他所有分组默认都走「通用选择」
+#   2. 相同服务商必须在同一规则内，避免 IP 漂移
+#   3. AI 服务完全独立，不经过链式开关，IP 稳定不漂移
+#   4. *.l-home.top 强制直连，避免回家代理回环
+
+# ========================================
+# 端口配置
+# ========================================
+mixed-port: 7890
+allow-lan: false
+bind-address: 127.0.0.1
+mode: rule
+log-level: info
+ipv6: true
+
+# ========================================
+# DNS 配置
+# ========================================
+dns:
+  enable: true
+  ipv6: true
+  # 用国内 DNS 解析代理节点域名，避免鸡蛋问题
+  proxy-server-nameserver:
+    - https://doh.pub/dns-query
+  default-nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  nameserver:
+    - https://dns.alidns.com/dns-query
+    - https://doh.pub/dns-query
+  fallback:
+    - https://1.1.1.1/dns-query
+    - https://8.8.8.8/dns-query
+  fallback-filter:
+    geoip: true
+    geoip-code: CN
+
+# ========================================
+# 节点配置（请自行替换为你的实际节点）
+# ========================================
+# proxies:
+#   - name: 新加坡节点1
+#     type: vmess
+#     server: your-server.com
+#     port: 443
+#     uuid: your-uuid
+#     alterId: 0
+#     cipher: auto
+#     tls: true
+#     servername: your-server.com
+#     network: ws
+#     ws-path: /
+#     ws-headers:
+#       Host: your-server.com
+#
+#   # 回家代理（通过家里的 PassWall Server）
+#   - name: Home
+#     type: ss
+#     server: socks.l-home.top
+#     port: 12320
+#     cipher: aes-256-gcm
+#     password: 你的密码
+
+# ========================================
+# 策略组配置
+# ========================================
+proxy-groups:
+  # ----------------------------------------------------
+  # 回家开关（一键切换是否走家里的代理翻墙）
+  # ----------------------------------------------------
+  - name: 回家开关
+    type: select
+    proxies:
+      - 所有-自动   # 默认：直接连机场节点
+      # - Home    # 回家时切到这个，通过家里的 PassWall Server 翻墙
+
+  # ----------------------------------------------------
+  # 链式开关（全局控制是否走住宅IP多跳）
+  # ----------------------------------------------------
+  - name: 链式开关
+    type: select
+    proxies:
+      - 关闭        # 默认：不走链式
+      # - 住宅节点  # 有需要时添加你的住宅节点
+
+  # ----------------------------------------------------
+  # 通用选择（大部分服务走这里，你的主要出口）
+  # ----------------------------------------------------
+  - name: 通用选择
+    type: select
+    proxies:
+      - 回家开关    # 第一个选项是回家开关，先决定是否走回家代理
+      - 链式开关    # 第二个选项是链式开关，然后才是普通节点
+      # - 新加坡节点1  # 在此添加你的实际节点
+      - 所有-自动
+      - 直连
+      - 拒绝
+
+  # ----------------------------------------------------
+  # AI 服务（完全独立，不经过链式开关和回家开关，IP 稳定不漂移）
+  # ----------------------------------------------------
+  - name: AI 服务
+    type: select
+    proxies:
+      # - 新加坡节点1  # 在此添加你的实际节点，与通用选择相同即可
+      - 所有-自动
+      - 直连
+      - 拒绝
+
+  # ----------------------------------------------------
+  # 开发服务（默认走通用选择，可单独切换）
+  # ----------------------------------------------------
+  - name: 开发服务
+    type: select
+    proxies:
+      - 通用选择
+      - 所有-自动
+      - 直连
+      - 拒绝
+
+  # ----------------------------------------------------
+  # 流媒体（默认走通用选择，可单独切换）
+  # ----------------------------------------------------
+  - name: 流媒体
+    type: select
+    proxies:
+      - 通用选择
+      - 所有-自动
+      - 直连
+      - 拒绝
+
+  # ----------------------------------------------------
+  # 游戏（默认走通用选择，可单独切换）
+  # ----------------------------------------------------
+  - name: 游戏
+    type: select
+    proxies:
+      - 通用选择
+      - 所有-自动
+      - 直连
+      - 拒绝
+
+  # ----------------------------------------------------
+  # 金融（默认走通用选择，可单独切换）
+  # ----------------------------------------------------
+  - name: 金融
+    type: select
+    proxies:
+      - 通用选择
+      - 所有-自动
+      - 直连
+      - 拒绝
+
+  # ----------------------------------------------------
+  # 测试（默认走通用选择，可单独切换）
+  # ----------------------------------------------------
+  - name: 测试
+    type: select
+    proxies:
+      - 通用选择
+      - 所有-自动
+      - 直连
+      - 拒绝
+
+  # ----------------------------------------------------
+  # 自动化策略组（自动选择节点）
+  # ----------------------------------------------------
+  - name: 所有-自动
+    type: url-test
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    proxies:
+      # - 新加坡节点1  # 在此添加你的实际节点
+      # - 香港节点1
+
+  # ----------------------------------------------------
+  # 内置特殊策略组
+  # ----------------------------------------------------
+  - name: 直连
+    type: select
+    proxies:
+      - DIRECT
+
+  - name: 拒绝
+    type: select
+    proxies:
+      - REJECT
+
+# ========================================
+# Rule Providers（通用规则，社区自动维护）
+# ========================================
+rule-providers:
+  # 广告拦截
+  BanAD:
+    behavior: classical
+    type: http
+    url: "https://raw.gitmirror.com/ACL4SSR/ACL4SSR/master/Clash/Providers/BanAD.yaml"
+    interval: 86400
+    path: ./ACL4SSR/BanAD.yaml
+
+  # 程序广告拦截
+  BanProgramAD:
+    behavior: classical
+    type: http
+    url: "https://raw.gitmirror.com/ACL4SSR/ACL4SSR/master/Clash/Providers/BanProgramAD.yaml"
+    interval: 86400
+    path: ./ACL4SSR/BanProgramAD.yaml
+
+  # 局域网
+  LocalAreaNetwork:
+    behavior: classical
+    type: http
+    url: "https://raw.gitmirror.com/ACL4SSR/ACL4SSR/master/Clash/Providers/LocalAreaNetwork.yaml"
+    interval: 86400
+    path: ./ACL4SSR/LocalAreaNetwork.yaml
+
+  # Google 服务
+  Google:
+    behavior: classical
+    type: http
+    url: "https://raw.gitmirror.com/ACL4SSR/ACL4SSR/master/Clash/Providers/Ruleset/Google.yaml"
+    interval: 86400
+    path: ./ACL4SSR/Google.yaml
+
+  # OpenAI / AI 服务
+  OpenAI:
+    behavior: classical
+    type: http
+    url: "https://raw.gitmirror.com/ACL4SSR/ACL4SSR/master/Clash/Providers/Ruleset/OpenAI.yaml"
+    interval: 86400
+    path: ./ACL4SSR/OpenAI.yaml
+
+  # 流媒体 - Netflix
+  Netflix:
+    behavior: classical
+    type: http
+    url: "https://raw.gitmirror.com/ACL4SSR/ACL4SSR/master/Clash/Providers/Ruleset/Netflix.yaml"
+    interval: 86400
+    path: ./ACL4SSR/Netflix.yaml
+
+  # 流媒体 - Disney+
+  Disney:
+    behavior: classical
+    type: http
+    url: "https://raw.gitmirror.com/ACL4SSR/ACL4SSR/master/Clash/Providers/Ruleset/Disney.yaml"
+    interval: 86400
+    path: ./ACL4SSR/Disney.yaml
+
+  # 流媒体 - Spotify
+  Spotify:
+    behavior: classical
+    type: http
+    url: "https://raw.gitmirror.com/ACL4SSR/ACL4SSR/master/Clash/Providers/Ruleset/Spotify.yaml"
+    interval: 86400
+    path: ./ACL4SSR/Spotify.yaml
+
+  # Steam / 游戏
+  Steam:
+    behavior: classical
+    type: http
+    url: "https://raw.gitmirror.com/ACL4SSR/ACL4SSR/master/Clash/Providers/Ruleset/Steam.yaml"
+    interval: 86400
+    path: ./ACL4SSR/Steam.yaml
+
+  # GitHub
+  GitHub:
+    behavior: classical
+    type: http
+    url: "https://raw.gitmirror.com/ACL4SSR/ACL4SSR/master/Clash/Providers/Ruleset/GitHub.yaml"
+    interval: 86400
+    path: ./ACL4SSR/GitHub.yaml
+
+  # 国内域名
+  ChinaDomain:
+    behavior: classical
+    type: http
+    url: "https://raw.gitmirror.com/ACL4SSR/ACL4SSR/master/Clash/Providers/ChinaDomain.yaml"
+    interval: 86400
+    path: ./ACL4SSR/ChinaDomain.yaml
+
+  # 国内公司IP
+  ChinaCompanyIp:
+    behavior: ipcidr
+    type: http
+    url: "https://raw.gitmirror.com/ACL4SSR/ACL4SSR/master/Clash/Providers/ChinaCompanyIp.yaml"
+    interval: 86400
+    path: ./ACL4SSR/ChinaCompanyIp.yaml
+
+# ========================================
+# 规则列表
+# 注意：按优先级从高到低排序！
+# ========================================
+rules:
+  # ====================================================
+  # 第一部分：你自用维护的特殊规则（一共就几条，一年不变几次）
+  # ====================================================
+
+  # 私有网络强制直连（最高优先级）
+  - IP-CIDR,10.0.0.0/8,DIRECT,no-resolve
+  - IP-CIDR,172.16.0.0/12,DIRECT,no-resolve
+  - IP-CIDR,192.168.0.0/16,DIRECT,no-resolve
+  - IP-CIDR,127.0.0.0/8,DIRECT,no-resolve
+  - IP-CIDR,fc00::/7,DIRECT,no-resolve
+  - IP-CIDR,fe80::/10,DIRECT,no-resolve
+  - IP-CIDR,::1/128,DIRECT,no-resolve
+
+  # 家里反代强制直连！避免回家代理回环
+  - DOMAIN-SUFFIX,l-home.top,DIRECT
+
+  # 个人域名直连
+  - DOMAIN,easonlao.ip-ddns.com,DIRECT
+
+  # m-team PT 站直连
+  - DOMAIN-KEYWORD,m-team,DIRECT
+  - DOMAIN-SUFFIX,m-team.cc,DIRECT
+  - DOMAIN-SUFFIX,m-team.io,DIRECT
+  - DOMAIN-SUFFIX,manfuz.co,DIRECT
+  - DOMAIN,tracker.m-team.cc,DIRECT
+  - DOMAIN,tracker.m-team.io,DIRECT
+  - DOMAIN,tra1.m-team.cc,DIRECT
+  - DOMAIN,tra1.m-team.io,DIRECT
+  - DOMAIN,tra99.manfuz.co,DIRECT
+
+  # ====================================================
+  # 第二部分：社区维护的通用规则（完全不用管，自动更新）
+  # ====================================================
+
+  # 局域网规则
+  - RULE-SET,LocalAreaNetwork,DIRECT
+
+  # 广告拦截（放在业务规则之前，避免广告走代理浪费流量）
+  - RULE-SET,BanAD,REJECT
+  - RULE-SET,BanProgramAD,REJECT
+
+  # AI 服务（高优先级，单独策略组，IP 稳定不漂移）
+  - RULE-SET,OpenAI,AI 服务
+  - DOMAIN-SUFFIX,anthropic.com,AI 服务
+  - DOMAIN-SUFFIX,gemini.google.com,AI 服务
+
+  # 开发服务
+  - RULE-SET,Google,开发服务
+  - RULE-SET,GitHub,开发服务
+
+  # 流媒体
+  - RULE-SET,Netflix,流媒体
+  - RULE-SET,Disney,流媒体
+  - RULE-SET,Spotify,流媒体
+
+  # 游戏
+  - RULE-SET,Steam,游戏
+
+  # 国内直连
+  - RULE-SET,ChinaDomain,DIRECT
+  - RULE-SET,ChinaCompanyIp,DIRECT
+  - GEOIP,CN,DIRECT
+
+  # ====================================================
+  # 第三部分：最终兜底
+  # ====================================================
+  - MATCH,通用选择
