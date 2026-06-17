@@ -90,6 +90,9 @@ proxy-groups:
 - DOMAIN-SUFFIX,cloud.google.com,开发服务
 - DOMAIN-SUFFIX,googleapis.com,开发服务
 
+# ⚠️ 注意：Google Gemini 相关域名已单独分到「AI 服务」策略组
+# 因为 Gemini 对节点地区要求更严格，需要可以单独切换
+
 # YouTube（如果希望走单独策略组，可以移到流媒体分组）
 - DOMAIN-SUFFIX,youtube.com,开发服务
 - DOMAIN-SUFFIX,ytimg.com,开发服务
