@@ -26,10 +26,15 @@ tags:
 ## 参考来源
 
 - 当前模板：`C:\Users\eason\.codex\attachments\2248a3c7-6a70-47cc-a7cd-dcd1364bd5c9\pasted-text.txt`
-- liandu2024 自定义列表缓存：`C:\tmp\liandu2024-clash-lists\`
 - Mihomo 官方规则说明：`https://wiki.metacubex.one/en/config/rules/`
 - Mihomo 官方示例配置：`https://wiki.metacubex.one/en/example/conf/`
 - MetaCubeX 规则库：`https://github.com/MetaCubeX/meta-rules-dat`
+
+## 重写原则
+
+- **不依赖外部仓库**：所有规则在本项目内自行维护创建，不依赖 liandu2024 或其他第三方规则仓库。
+- **按组审查确认**：每一组规则先确认设计，再进入完整配置。
+- **最小可用原则**：只保留必要的规则，不盲目复制大量个人偏好列表。
 
 ## 重写顺序
 
@@ -53,6 +58,4 @@ tags:
 
 - `default` 第一项是 `直连`，会导致多数业务组默认直连。
 - `国内` 继承 `default`，后续加通用选择时应拆成独立组。
-- `Block / Domain` 不是通用广告规则，只是 Adobe 相关阻断列表。
-- liandu2024 的 `Direct.list` 包含大量机场、订阅、VPN 和 VPS 域名，属于作者个人偏好，不宜不加审查地全盘沿用。
-- `Direct.list` 与 `Proxy.list` 有一个冲突域名：`v140oy1s.xyz`。
+- 广告/拦截规则需要自行整理维护，不依赖外部列表。
