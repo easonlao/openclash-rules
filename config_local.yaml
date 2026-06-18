@@ -1,8 +1,35 @@
-  # ========================
-# Clash-ALL 优化配置
-# ========================
+# =========================================================
+# OpenClash 自用配置
+# 基于 Hans 链式代理模板，精简适配单住宅IP场景
+# 适用：OpenClash（Mihomo 内核）/ iStoreOS 软路由
+# =========================================================
 
-# 机场节点订阅
+# ──────────────── 基础设置 ────────────────
+mixed-port: 7890
+allow-lan: true
+bind-address: '*'
+mode: rule
+log-level: info
+ipv6: true
+
+# ──────────────── DNS ────────────────
+dns:
+  enable: true
+  ipv6: true
+  listen: 0.0.0.0:53
+  default-nameserver:
+  - 223.5.5.5
+  - 119.29.29.29
+  enhanced-mode: redir-host
+  nameserver:
+  - https://dns.alidns.com/dns-query
+  - https://doh.pub/dns-query
+  fallback:
+  - https://1.1.1.1/dns-query
+  - https://8.8.8.8/dns-query
+  fallback-filter:
+    geoip: true
+    geoip-code: CN
 
 proxy-providers:
 
