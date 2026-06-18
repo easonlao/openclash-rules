@@ -4,7 +4,7 @@ area: project
 purpose: guide
 lifecycle: active
 created: 2026-06-16
-updated: 2026-06-20
+updated: 2026-06-19
 tags:
   - openclash
   - clash
@@ -157,7 +157,7 @@ python3 validate_config.py
 
 ## 更新日志
 
-### 2026-06-20 性能优化
+### 2026-06-19 性能优化
 
 - 🔥 删除 7 个重复冗余的规则集
 - ⚡ 10 个规则集从 list 纯文本升级为 mrs 二进制格式，加载速度大幅提升
