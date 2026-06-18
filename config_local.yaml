@@ -448,7 +448,6 @@ rule-providers:
   China / IP: {<<: *ip, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geoip/cn.mrs"}
   # 自用直连规则（自己仓库维护）
   # 自用颜色规则（自己仓库维护）
-  Sex / Domain: {<<: *class, url: "https://gh-proxy.com/raw.githubusercontent.com/easonlao/openclash-rules/master/rules/Sex.list"}
 #  Twitter: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/x.mrs"}
 #  WhatsApp: {<<: *class, url: "https://gh-proxy.com/raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Whatsapp/Whatsapp.list"}
 #  Facebook: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/facebook.mrs"}
