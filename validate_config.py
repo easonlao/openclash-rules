@@ -1,12 +1,18 @@
 #!/usr/bin/env python3
 """
 OpenClash 配置文件验证脚本
-用于检测配置文件的语法、引用、URL 等问题
+用于检测配置文件的语法、引用、URL、锚点格式等问题
+
+格式规则：
+- .mrs 文件（二进制）+ behavior=domain → 需要 *domain 锚点
+- .mrs 文件（二进制）+ behavior=ipcidr → 需要 *ip 锚点
+- .list 文件（纯文本）+ behavior=classical → 需要 *class 锚点
 """
 
 import yaml
 import requests
 import sys
+import re
 from urllib.parse import urlparse
 
 def validate_config(filename='config_local.yaml'):
@@ -18,7 +24,7 @@ def validate_config(filename='config_local.yaml'):
     warnings = []
     
     # 1. YAML 语法检查
-    print("\n[1/8] YAML 语法检查...")
+    print("\n[1/9] YAML 语法检查...")
     try:
         with open(filename, 'r') as f:
             config = yaml.safe_load(f)
@@ -29,7 +35,7 @@ def validate_config(filename='config_local.yaml'):
         return errors, warnings
     
     # 2. 顶级字段检查
-    print("\n[2/8] 顶级字段检查...")
+    print("\n[2/9] 顶级字段检查...")
     required_fields = ['mixed-port', 'allow-lan', 'mode', 'dns', 'proxies', 
                        'proxy-providers', 'proxy-groups', 'rule-providers', 'rules']
     for field in required_fields:
@@ -40,7 +46,7 @@ def validate_config(filename='config_local.yaml'):
             print(f"  ✅ {field}")
     
     # 3. 重复规则集名称检查
-    print("\n[3/8] 重复规则集名称检查...")
+    print("\n[3/9] 重复规则集名称检查...")
     if 'rule-providers' in config:
         provider_names = list(config['rule-providers'].keys())
         duplicates = set([x for x in provider_names if provider_names.count(x) > 1])
@@ -51,7 +57,7 @@ def validate_config(filename='config_local.yaml'):
             print(f"  ✅ 无重复名称（共 {len(provider_names)} 个规则集）")
     
     # 4. 策略组引用顺序检查
-    print("\n[4/8] 策略组引用顺序检查...")
+    print("\n[4/9] 策略组引用顺序检查...")
     if 'proxy-groups' in config:
         group_names = [g['name'] for g in config['proxy-groups']]
         order_errors = []
@@ -73,7 +79,7 @@ def validate_config(filename='config_local.yaml'):
             print(f"  ✅ 所有策略组引用顺序正确")
     
     # 5. 规则集与规则引用匹配检查
-    print("\n[5/8] 规则集与规则引用匹配检查...")
+    print("\n[5/9] 规则集与规则引用匹配检查...")
     if 'rule-providers' in config and 'rules' in config:
         provider_names = set(config['rule-providers'].keys())
         referenced_names = set()
@@ -98,7 +104,7 @@ def validate_config(filename='config_local.yaml'):
             print(f"  ✅ 所有 {len(referenced_names)} 个引用都匹配")
     
     # 6. 规则集命名格式检查
-    print("\n[6/8] 规则集命名格式检查...")
+    print("\n[6/9] 规则集命名格式检查...")
     if 'rule-providers' in config:
         bad_names = []
         for name in config['rule-providers'].keys():
@@ -114,7 +120,7 @@ def validate_config(filename='config_local.yaml'):
             print(f"  ✅ 所有规则集名称格式正确")
     
     # 7. 策略组引用检查
-    print("\n[7/8] 策略组引用检查...")
+    print("\n[7/9] 策略组引用检查...")
     if 'proxy-groups' in config:
         all_group_names = set(g['name'] for g in config['proxy-groups'])
         all_proxy_names = set()
@@ -138,8 +144,62 @@ def validate_config(filename='config_local.yaml'):
         else:
             print(f"  ✅ 所有策略组引用有效")
     
-    # 8. 规则集 URL 可访问性检查（可选，较慢）
-    print("\n[8/8] 规则集 URL 可访问性检查...")
+    # 8. 规则集锚点格式检查（核心检查）
+    print("\n[8/9] 规则集锚点格式检查...")
+    if 'rule-providers' in config:
+        anchor_errors = []
+        
+        for name, rule in config['rule-providers'].items():
+            if not isinstance(rule, dict) or 'url' not in rule:
+                continue
+            
+            url = rule['url']
+            behavior = rule.get('behavior', '')
+            format_type = rule.get('format', '')
+            
+            # 核心规则：
+            # .mrs 文件（二进制）+ behavior=domain → 需要 *domain 锚点
+            # .mrs 文件（二进制）+ behavior=ipcidr → 需要 *ip 锚点
+            # .list 文件（纯文本）+ behavior=classical → 需要 *class 锚点
+            
+            is_mrs = '.mrs' in url
+            is_list = '.list' in url
+            
+            if is_mrs:
+                # .mrs 文件必须用 mrs 格式
+                if format_type != 'mrs':
+                    anchor_errors.append(
+                        f"{name}: .mrs 文件 format 必须是 mrs，当前: format={format_type}"
+                    )
+                # behavior 必须是 domain 或 ipcidr
+                if behavior == 'domain':
+                    # 这是正确的
+                    pass
+                elif behavior == 'ipcidr':
+                    # 这是正确的（IP 类型）
+                    pass
+                else:
+                    anchor_errors.append(
+                        f"{name}: .mrs 文件 behavior 必须是 domain 或 ipcidr，当前: behavior={behavior}"
+                    )
+            elif is_list:
+                # .list 文件必须用 classical + text
+                if behavior != 'classical' or format_type != 'text':
+                    anchor_errors.append(
+                        f"{name}: .list 文件必须用 *class 锚点（behavior: classical, format: text），"
+                        f"当前: behavior={behavior}, format={format_type}"
+                    )
+        
+        if anchor_errors:
+            print(f"  ❌ 发现 {len(anchor_errors)} 个锚点格式错误:")
+            for e in anchor_errors:
+                print(f"    - {e}")
+            errors.extend(anchor_errors)
+        else:
+            print(f"  ✅ 所有规则集锚点格式正确")
+    
+    # 9. 规则集 URL 可访问性检查（可选，较慢）
+    print("\n[9/9] 规则集 URL 可访问性检查...")
     if 'rule-providers' in config:
         url_errors = []
         url_count = 0
