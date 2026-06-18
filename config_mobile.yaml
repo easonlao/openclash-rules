@@ -355,148 +355,48 @@ proxy-groups:
   - 其他-自动
 
 # ──────────────── 规则集 ────────────────
+# 规则集锚点定义
+rule-anchor:
+  ip: &ip {type: http, interval: 86400, behavior: ipcidr, format: mrs}
+  domain: &domain {type: http, interval: 86400, behavior: domain, format: mrs}
+  class: &class {type: http, interval: 86400, behavior: classical, format: text}
+
 rule-providers:
   # 广告拦截
-  BanAD:
-    behavior: classical
-    type: http
-    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Providers/BanAD.yaml
-    interval: 86400
-  BanProgramAD:
-    behavior: classical
-    type: http
-    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Providers/BanProgramAD.yaml
-    interval: 86400
+  BanAD / Domain: {<<: *class, url: "https://gh-proxy.com/raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Providers/BanAD.yaml"}
+  BanProgramAD / Domain: {<<: *class, url: "https://gh-proxy.com/raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Providers/BanProgramAD.yaml"}
   # AI 服务
-  ChatGPT:
-    behavior: domain
-    type: http
-    url: https://raw.githubusercontent.com/metacubex/meta-rules-dat/meta/geo/geosite/openai.list
-    interval: 86400
-  Claude:
-    behavior: classical
-    type: http
-    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Claude/Claude.list
-    interval: 86400
-  Groq:
-    behavior: domain
-    type: http
-    url: https://raw.githubusercontent.com/metacubex/meta-rules-dat/meta/geo/geosite/groq.list
-    interval: 86400
+  ChatGPT / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/openai.mrs"}
+  Claude / Domain: {<<: *class, url: "https://gh-proxy.com/raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Claude/Claude.list"}
+  Groq / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/groq.mrs"}
   # 科技公司
-  Google:
-    behavior: domain
-    type: http
-    url: https://raw.githubusercontent.com/metacubex/meta-rules-dat/meta/geo/geosite/google.list
-    interval: 86400
-  Microsoft:
-    behavior: domain
-    type: http
-    url: https://raw.githubusercontent.com/metacubex/meta-rules-dat/meta/geo/geosite/microsoft.list
-    interval: 86400
-  Apple:
-    behavior: domain
-    type: http
-    url: https://raw.githubusercontent.com/metacubex/meta-rules-dat/meta/geo/geosite/apple.list
-    interval: 86400
-  AppleCN:
-    behavior: domain
-    type: http
-    url: https://raw.githubusercontent.com/metacubex/meta-rules-dat/meta/geo/geosite/apple-cn.list
-    interval: 86400
-  Nvidia:
-    behavior: classical
-    type: http
-    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Nvidia/Nvidia.list
-    interval: 86400
+  Google / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/google.mrs"}
+  Microsoft / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/microsoft.mrs"}
+  Apple / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/apple.mrs"}
+  AppleCN / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/apple-cn.mrs"}
+  Nvidia / Domain: {<<: *class, url: "https://gh-proxy.com/raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Nvidia/Nvidia.list"}
   # 加密货币
-  Crypto:
-    behavior: classical
-    type: http
-    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Cryptocurrency/Cryptocurrency.list
-    interval: 86400
+  Crypto / Domain: {<<: *class, url: "https://gh-proxy.com/raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Cryptocurrency/Cryptocurrency.list"}
   # 流媒体
-  Netflix:
-    behavior: domain
-    type: http
-    url: https://raw.githubusercontent.com/metacubex/meta-rules-dat/meta/geo/geosite/netflix.list
-    interval: 86400
-  Disney:
-    behavior: domain
-    type: http
-    url: https://raw.githubusercontent.com/metacubex/meta-rules-dat/meta/geo/geosite/disney.list
-    interval: 86400
-  Spotify:
-    behavior: domain
-    type: http
-    url: https://raw.githubusercontent.com/metacubex/meta-rules-dat/meta/geo/geosite/spotify.list
-    interval: 86400
-  TikTok:
-    behavior: domain
-    type: http
-    url: https://raw.githubusercontent.com/metacubex/meta-rules-dat/meta/geo/geosite/tiktok.list
-    interval: 86400
-  HBO:
-    behavior: domain
-    type: http
-    url: https://raw.githubusercontent.com/metacubex/meta-rules-dat/meta/geo/geosite/hbo.list
-    interval: 86400
+  Netflix / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/netflix.mrs"}
+  Disney / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/disney.mrs"}
+  Spotify / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/spotify.mrs"}
+  TikTok / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/tiktok.mrs"}
+  HBO / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/hbo.mrs"}
   # 游戏平台
-  Steam:
-    behavior: domain
-    type: http
-    url: https://raw.githubusercontent.com/metacubex/meta-rules-dat/meta/geo/geosite/steam.list
-    interval: 86400
-  Epic:
-    behavior: classical
-    type: http
-    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Epic/Epic.list
-    interval: 86400
-  Blizzard:
-    behavior: classical
-    type: http
-    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Blizzard/Blizzard.list
-    interval: 86400
-  EA:
-    behavior: classical
-    type: http
-    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/EA/EA.list
-    interval: 86400
+  Steam / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/steam.mrs"}
+  Epic / Domain: {<<: *class, url: "https://gh-proxy.com/raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Epic/Epic.list"}
+  Blizzard / Domain: {<<: *class, url: "https://gh-proxy.com/raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Blizzard/Blizzard.list"}
+  EA / Domain: {<<: *class, url: "https://gh-proxy.com/raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/EA/EA.list"}
   # 测试/兜底
-  Test:
-    behavior: classical
-    type: http
-    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/ChinaTest/ChinaTest.list
-    interval: 86400
+  Test / Domain: {<<: *class, url: "https://gh-proxy.com/raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/ChinaTest/ChinaTest.list"}
   # 国内/国外分流
-  Proxy:
-    behavior: classical
-    type: http
-    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Proxy/Proxy.list
-    interval: 86400
-  Direct:
-    behavior: classical
-    type: http
-    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Direct/Direct.list
-    interval: 86400
-  China:
-    behavior: domain
-    type: http
-    url: https://raw.githubusercontent.com/metacubex/meta-rules-dat/meta/geo/geosite/cn.list
-    interval: 86400
-  ChinaIP:
-    behavior: ipcidr
-    type: http
-    url: https://raw.githubusercontent.com/metacubex/meta-rules-dat/meta/geo/geoip/cn.list
-    interval: 86400
-  Private:
-    behavior: domain
-    type: http
-    url: https://raw.githubusercontent.com/metacubex/meta-rules-dat/meta/geo/geosite/private.list
-    interval: 86400
-
+  Proxy / Domain: {<<: *class, url: "https://gh-proxy.com/raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Proxy/Proxy.list"}
+  Direct / Domain: {<<: *class, url: "https://gh-proxy.com/raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Direct/Direct.list"}
+  China / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/cn.mrs"}
+  ChinaIP / Domain: {<<: *class, url: "https://raw.githubusercontent.com/metacubex/meta-rules-dat/meta/geo/geoip/cn.list"}
+  Private / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/private.mrs"}
 # ──────────────── 分流规则 ────────────────
-rules:
 # 广告拦截（最高优先级）
 - RULE-SET,BanAD,拒绝
 - RULE-SET,BanProgramAD,拒绝
@@ -505,9 +405,6 @@ rules:
 - IP-CIDR,172.16.0.0/12,直连,no-resolve
 - IP-CIDR,192.168.0.0/16,直连,no-resolve
 - IP-CIDR,127.0.0.0/8,直连,no-resolve
-- IP-CIDR6,fc00::/7,直连,no-resolve
-- IP-CIDR6,fe80::/10,直连,no-resolve
-- IP-CIDR6,::1/128,直连,no-resolve
 - DOMAIN-SUFFIX,l-home.top,直连
 - DOMAIN,easonlao.ip-ddns.com,直连
 - DOMAIN-KEYWORD,m-team,直连
