@@ -327,6 +327,14 @@ proxy-groups:
 # Rule Providers（通用规则，社区自动维护）
 # ========================================
 rule-providers:
+  # 我的自用直连规则集（本仓库维护，直接在 rules/MyDirect.list 里加）
+  MyDirect:
+    behavior: classical
+    type: http
+    url: "https://raw.githubusercontent.com/easonlao/openclash-rules/master/rules/MyDirect.list"
+    interval: 86400
+    path: ./MyDirect.list
+
   # 广告拦截
   BanAD:
     behavior: classical
@@ -477,13 +485,7 @@ rule-providers:
     interval: 86400
     path: ./Streaming/HBO.list
 
-  # 动漫流媒体（本仓库维护，不依赖外部）
-  Crunchyroll:
-    behavior: classical
-    type: http
-    url: "https://raw.githubusercontent.com/easonlao/openclash-rules/master/rules/Crunchyroll.list"
-    interval: 86400
-    path: ./Streaming/Crunchyroll.list
+
 
   # 游戏
   Steam:
@@ -579,31 +581,9 @@ rule-providers:
 # ========================================
 rules:
   # ====================================================
-  # 第一部分：自用维护的特殊规则
+  # 第一部分：我的自用直连规则集（直接改 rules/MyDirect.list）
   # ====================================================
-
-  # 家里反代强制直连！避免回家代理回环
-  - DOMAIN-SUFFIX,l-home.top,DIRECT
-
-  # 私有网络强制直连
-  - IP-CIDR,10.0.0.0/8,DIRECT,no-resolve
-  - IP-CIDR,172.16.0.0/12,DIRECT,no-resolve
-  - IP-CIDR,192.168.0.0/16,DIRECT,no-resolve
-  - IP-CIDR,127.0.0.0/8,DIRECT,no-resolve
-
-  # 个人域名直连
-  - DOMAIN,easonlao.ip-ddns.com,DIRECT
-
-  # m-team PT站直连
-  - DOMAIN-KEYWORD,m-team,DIRECT
-  - DOMAIN-SUFFIX,m-team.cc,DIRECT
-  - DOMAIN-SUFFIX,m-team.io,DIRECT
-  - DOMAIN,tracker.m-team.cc,DIRECT
-
-  # ====================================================
-  # 第二部分：社区维护的通用规则
-  # ====================================================
-
+  - RULE-SET,MyDirect,直连
   # 广告拦截
   - RULE-SET,BanAD,REJECT
   - RULE-SET,BanProgramAD,REJECT
@@ -632,7 +612,6 @@ rules:
   - RULE-SET,Disney,流媒体
   - RULE-SET,HBO,流媒体
   - RULE-SET,Spotify,流媒体
-  - RULE-SET,Crunchyroll,流媒体
 
   # 游戏
   - RULE-SET,Steam,游戏

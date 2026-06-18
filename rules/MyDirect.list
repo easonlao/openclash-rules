@@ -1,0 +1,40 @@
+# ========================================
+# 我的自用直连规则集
+# ========================================
+# 说明：
+#   1. 这里放你需要强制直连的域名/IP
+#   2. 直接往下面加就行，格式参考已有内容
+#   3. 修改后推送到 GitHub，Clash 会自动更新
+# ========================================
+
+# ---------- 私有网络（最高优先级）----------
+IP-CIDR,10.0.0.0/8,no-resolve
+IP-CIDR,172.16.0.0/12,no-resolve
+IP-CIDR,192.168.0.0/16,no-resolve
+IP-CIDR,127.0.0.0/8,no-resolve
+IP-CIDR,fc00::/7,no-resolve
+IP-CIDR,fe80::/10,no-resolve
+IP-CIDR,::1/128,no-resolve
+
+# ---------- 回家代理防回环（仅手机需要，但放这里也不影响）----------
+DOMAIN-SUFFIX,l-home.top
+
+# ---------- 个人域名 ----------
+DOMAIN,easonlao.ip-ddns.com
+
+# ---------- PT 站 ----------
+DOMAIN-KEYWORD,m-team
+DOMAIN-SUFFIX,m-team.cc
+DOMAIN-SUFFIX,m-team.io
+DOMAIN-SUFFIX,manfuz.co
+DOMAIN,tracker.m-team.cc
+DOMAIN,tracker.m-team.io
+DOMAIN,tra1.m-team.cc
+DOMAIN,tra1.m-team.io
+DOMAIN,tra99.manfuz.co
+
+# ---------- 在这里加你自己的规则 ----------
+# 格式：
+# DOMAIN-SUFFIX,example.com
+# DOMAIN,test.com
+# IP-CIDR,1.2.3.4/32
