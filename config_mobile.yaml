@@ -362,7 +362,7 @@ rule-providers:
   Claude:
     behavior: classical
     type: http
-    url: "https://raw.gitmirror.com/liandu2024/clash/main/list/Claude.list"
+    url: "https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/Claude/Claude.list"
     interval: 86400
     path: ./AI/Claude.list
 
@@ -416,7 +416,7 @@ rule-providers:
   Crypto:
     behavior: classical
     type: http
-    url: "https://raw.gitmirror.com/liandu2024/clash/main/list/Crypto.list"
+    url: "https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/Cryptocurrency/Cryptocurrency.list"
     interval: 86400
     path: ./Crypto/Crypto.list
 
@@ -517,7 +517,7 @@ rule-providers:
   Test:
     behavior: classical
     type: http
-    url: "https://raw.gitmirror.com/liandu2024/clash/main/list/Check.list"
+    url: "https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/ChinaTest/ChinaTest.list"
     interval: 86400
     path: ./Test/Check.list
 
@@ -533,7 +533,7 @@ rule-providers:
   Proxy:
     behavior: classical
     type: http
-    url: "https://raw.gitmirror.com/liandu2024/clash/main/list/Proxy.list"
+    url: "https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/Proxy/Proxy.list"
     interval: 86400
     path: ./Proxy/Proxy.list
 
@@ -548,7 +548,7 @@ rule-providers:
   Direct:
     behavior: classical
     type: http
-    url: "https://raw.gitmirror.com/liandu2024/clash/main/list/Direct.list"
+    url: "https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/Direct/Direct.list"
     interval: 86400
     path: ./China/Direct.list
 
