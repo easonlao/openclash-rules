@@ -2,11 +2,12 @@
 # OpenClash 配置文件 - 本地软路由版
 # ========================================
 # 最后更新: 2026-06-18
-# 设计原则:
-#   1. 住宅IP手动配置，不是订阅链接
-#   2. 故转用 fallback 模式，节点挂了才自动切，平时不跳 IP
-#   3. 自动测速仅作备选，不设为默认
-#   4. AI 服务完全独立，不经过链式开关
+# 核心设计:
+#   1. 🏆 通用选择是全局总开关，改一次所有业务组都跟着变
+#   2. 住宅IP手动配置，不是订阅链接
+#   3. 故转用 fallback 模式，节点挂了才自动切，平时不跳 IP
+#   4. 自动测速仅作备选，不设为默认
+#   5. 某个服务需要单独节点时，才去那个组里单独改
 
 # ========================================
 # 端口配置
@@ -69,58 +70,166 @@ proxy-providers:
 # ========================================
 # 策略组配置
 # ========================================
-default: &default
-  type: select
-  proxies:
-    - 链式开关
-    - 所有-故转
-    - 所有-手动
-    - 香港-故转
-    - 香港-自动
-    - 香港-手动
-    - 台湾-故转
-    - 台湾-自动
-    - 台湾-手动
-    - 日本-故转
-    - 日本-自动
-    - 日本-手动
-    - 新加坡-故转
-    - 新加坡-自动
-    - 新加坡-手动
-    - 美国-故转
-    - 美国-自动
-    - 美国-手动
-    - 其他-故转
-    - 其他-手动
-    - 直连
-    - 拒绝
-
 proxy-groups:
   # ----------------------------------------------------
-  # 链式开关（全局控制是否走住宅IP多跳）
+  # 🏆 通用选择（全局总开关，改这个所有业务组都跟着变）
+  # ----------------------------------------------------
+  - name: 通用选择
+    type: select
+    proxies:
+      - 链式开关
+      - 所有-故转
+      - 所有-手动
+      - 香港-故转
+      - 台湾-故转
+      - 日本-故转
+      - 新加坡-故转
+      - 美国-故转
+      - 其他-故转
+      - 所有-自动
+      - 香港-自动
+      - 台湾-自动
+      - 日本-自动
+      - 新加坡-自动
+      - 美国-自动
+      - 其他-自动
+      - 直连
+      - 拒绝
+
+  # ----------------------------------------------------
+  # 链式开关（全局控制是否走住宅 IP 多跳）
   # ----------------------------------------------------
   - name: 链式开关
     type: select
     proxies:
       - 所有-故转    # 默认：不走链式
-      - 住宅节点    # 走住宅IP（手动配置的节点）
+      - 住宅节点    # 走住宅 IP
 
   # ====================================================
-  # 业务分流组（按原始模板命名）
+  # 业务分流组（默认都走通用选择，需要时再单独改）
   # ====================================================
-  - {name: 人工智能, <<: *default}
-  - {name: 流媒体, <<: *default}
-  - {name: 谷歌, <<: *default}
-  - {name: 微软, <<: *default}
-  - {name: 苹果, <<: *default}
-  - {name: 英伟达, <<: *default}
-  - {name: 游戏, <<: *default}
-  - {name: 加密货币, <<: *default}
-  - {name: 颜色, <<: *default}
-  - {name: 测试, <<: *default}
-  - {name: 国外, <<: *default}
-  - {name: 国内, <<: *default}
-  - {name: 其他, <<: *default}
+  - name: 人工智能
+    type: select
+    proxies:
+      - 通用选择      # 默认走通用
+      - 所有-故转     # 下面这些是给你需要单独设置时用的
+      - 新加坡-故转
+      - 美国-故转
+      - 所有-手动
+      - 直连
+      - 拒绝
+
+  - name: 流媒体
+    type: select
+    proxies:
+      - 通用选择
+      - 所有-故转
+      - 香港-故转
+      - 台湾-故转
+      - 日本-故转
+      - 新加坡-故转
+      - 美国-故转
+      - 所有-手动
+      - 直连
+      - 拒绝
+
+  - name: 谷歌
+    type: select
+    proxies:
+      - 通用选择
+      - 所有-故转
+      - 所有-手动
+      - 直连
+      - 拒绝
+
+  - name: 微软
+    type: select
+    proxies:
+      - 通用选择
+      - 所有-故转
+      - 所有-手动
+      - 直连
+      - 拒绝
+
+  - name: 苹果
+    type: select
+    proxies:
+      - 通用选择
+      - 所有-故转
+      - 所有-手动
+      - 直连
+      - 拒绝
+
+  - name: 英伟达
+    type: select
+    proxies:
+      - 通用选择
+      - 所有-故转
+      - 所有-手动
+      - 直连
+      - 拒绝
+
+  - name: 游戏
+    type: select
+    proxies:
+      - 通用选择
+      - 所有-故转
+      - 所有-手动
+      - 直连
+      - 拒绝
+
+  - name: 加密货币
+    type: select
+    proxies:
+      - 通用选择
+      - 所有-故转
+      - 所有-手动
+      - 直连
+      - 拒绝
+
+  - name: 颜色
+    type: select
+    proxies:
+      - 通用选择
+      - 所有-故转
+      - 所有-手动
+      - 直连
+      - 拒绝
+
+  - name: 测试
+    type: select
+    proxies:
+      - 通用选择
+      - 所有-故转
+      - 所有-手动
+      - 所有-自动
+      - 直连
+      - 拒绝
+
+  - name: 国外
+    type: select
+    proxies:
+      - 通用选择
+      - 所有-故转
+      - 所有-手动
+      - 直连
+      - 拒绝
+
+  - name: 国内
+    type: select
+    proxies:
+      - 通用选择
+      - 直连
+      - 拒绝
+
+  - name: 其他
+    type: select
+    proxies:
+      - 通用选择
+      - 所有-故转
+      - 所有-手动
+      - 直连
+      - 拒绝
 
   # ====================================================
   # 工具分组
@@ -330,14 +439,6 @@ rule-providers:
     interval: 86400
     path: ./ACL4SSR/BanProgramAD.yaml
 
-  # 局域网
-  LocalAreaNetwork:
-    behavior: classical
-    type: http
-    url: "https://raw.gitmirror.com/ACL4SSR/ACL4SSR/master/Clash/Providers/LocalAreaNetwork.yaml"
-    interval: 86400
-    path: ./ACL4SSR/LocalAreaNetwork.yaml
-
   # AI 相关
   ChatGPT:
     behavior: domain
@@ -407,27 +508,6 @@ rule-providers:
     interval: 86400
     path: ./Crypto/Crypto.list
 
-  Binance:
-    behavior: domain
-    type: http
-    url: "https://raw.gitmirror.com/metacubex/meta-rules-dat/meta/geo/geosite/binance.list"
-    interval: 86400
-    path: ./Crypto/Binance.list
-
-  OKX:
-    behavior: domain
-    type: http
-    url: "https://raw.gitmirror.com/metacubex/meta-rules-dat/meta/geo/geosite/okx.list"
-    interval: 86400
-    path: ./Crypto/OKX.list
-
-  Bybit:
-    behavior: domain
-    type: http
-    url: "https://raw.gitmirror.com/metacubex/meta-rules-dat/meta/geo/geosite/bybit.list"
-    interval: 86400
-    path: ./Crypto/Bybit.list
-
   # 流媒体
   Netflix:
     behavior: domain
@@ -463,8 +543,6 @@ rule-providers:
     url: "https://raw.gitmirror.com/metacubex/meta-rules-dat/meta/geo/geosite/hbo.list"
     interval: 86400
     path: ./Streaming/HBO.list
-
-
 
   # 游戏
   Steam:
@@ -503,7 +581,7 @@ rule-providers:
     interval: 86400
     path: ./Test/Check.list
 
-  # 成人内容（本仓库维护，不依赖外部）
+  # 成人内容（本仓库维护，不依赖外部
   Sex:
     behavior: classical
     type: http
@@ -518,13 +596,6 @@ rule-providers:
     url: "https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/Proxy/Proxy.list"
     interval: 86400
     path: ./Proxy/Proxy.list
-
-  Globe:
-    behavior: classical
-    type: http
-    url: "https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/Global/Global.list"
-    interval: 86400
-    path: ./Proxy/Globe.list
 
   # 国内直连
   Direct:
@@ -563,9 +634,10 @@ rules:
   # 第一部分：我的自用直连规则集（直接改 rules/MyDirect.list）
   # ====================================================
   - RULE-SET,MyDirect,直连
+
   # 广告拦截
-  - RULE-SET,BanAD,REJECT
-  - RULE-SET,BanProgramAD,REJECT
+  - RULE-SET,BanAD,拒绝
+  - RULE-SET,BanProgramAD,拒绝
 
   # AI 服务
   - RULE-SET,ChatGPT,人工智能
@@ -581,9 +653,6 @@ rules:
 
   # 加密货币
   - RULE-SET,Crypto,加密货币
-  - RULE-SET,Binance,加密货币
-  - RULE-SET,OKX,加密货币
-  - RULE-SET,Bybit,加密货币
 
   # 流媒体
   - RULE-SET,TikTok,流媒体
@@ -606,15 +675,11 @@ rules:
 
   # 国外通用
   - RULE-SET,Proxy,国外
-  - RULE-SET,Globe,国外
-
-  # 国内直连
   - RULE-SET,Direct,国内
   - RULE-SET,China,国内
-  - RULE-SET,ChinaIP,国内,no-resolve
-  - RULE-SET,Private,国内
+  - RULE-SET,ChinaIP,国内
 
   # ====================================================
-  # 第三部分：最终兜底
+  # 第二部分：最终兜底
   # ====================================================
   - MATCH,其他
