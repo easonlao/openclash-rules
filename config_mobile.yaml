@@ -477,10 +477,11 @@ rule-providers:
     interval: 86400
     path: ./Streaming/HBO.list
 
+  # 动漫流媒体（本仓库维护，不依赖外部）
   Crunchyroll:
     behavior: classical
     type: http
-    url: "https://raw.gitmirror.com/liandu2024/clash/main/list/Crunchyroll.list"
+    url: "https://raw.githubusercontent.com/easonlao/openclash-rules/master/rules/Crunchyroll.list"
     interval: 86400
     path: ./Streaming/Crunchyroll.list
 
@@ -521,11 +522,11 @@ rule-providers:
     interval: 86400
     path: ./Test/Check.list
 
-  # 成人内容
+  # 成人内容（本仓库维护，不依赖外部）
   Sex:
     behavior: classical
     type: http
-    url: "https://raw.gitmirror.com/liandu2024/clash/main/list/Sex.list"
+    url: "https://raw.githubusercontent.com/easonlao/openclash-rules/master/rules/Sex.list"
     interval: 86400
     path: ./Block/Sex.list
 
