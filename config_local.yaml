@@ -480,7 +480,7 @@ rules:
 - RULE-SET,Netflix / Domain,流媒体
 - RULE-SET,Netflix / IP,流媒体,no-resolve
 - RULE-SET,Disney / Domain,流媒体
-- RULE-SET,Amazon / Domain,流媒体
+- RULE-SET,Amazon / Domain,国外
 - RULE-SET,HBO / Domain,流媒体
 - RULE-SET,Spotify / Domain,流媒体
 - RULE-SET,Crunchyroll / Domain,流媒体
