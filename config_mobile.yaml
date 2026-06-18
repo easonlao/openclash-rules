@@ -1,9 +1,19 @@
+# =========================================================
+# OpenClash 自用配置（手机版）
+# 基于 Hans 链式代理模板，精简适配单住宅IP场景
+# 适用：Clash Meta for Android
+# 差异：多了回家开关、Home节点、*.l-home.top 直连规则
+# =========================================================
+
+# ──────────────── 基础设置 ────────────────
 mixed-port: 7890
 allow-lan: false
 bind-address: 127.0.0.1
 mode: rule
 log-level: info
 ipv6: true
+
+# ──────────────── DNS ────────────────
 dns:
   enable: true
   ipv6: true
@@ -23,23 +33,35 @@ dns:
   fallback-filter:
     geoip: true
     geoip-code: CN
+
+# ──────────────── 节点配置 ────────────────
+
+# === 自建节点 ===
 proxies:
+# 回家代理（iStoreOS PassWall Server，域名走 Cloudflare IPv6）
 - name: Home
   type: ss
   server: socks.l-home.top
   port: 12320
   cipher: aes-256-gcm
-  password: 你的SS密码
+  password: 你的SS密码           # <--- 【必改】填写真实密码
+
+# 住宅IP（socks5协议，手机端不支持 dialer-proxy，住宅不可用）
 - name: 住宅-socks5
   type: socks5
-  server: 你的住宅IP地址
-  port: 12345
-  username: 你的用户名
-  password: 你的密码
+  server: 154.44.87.101
+  port: 9004
+  username: cpgp1vg4
+  password: AioxAY0oDQPC
+  # 注意：手机端 Clash Meta 可能不支持 dialer-proxy
+  # 如需在手机上走住宅，需在软路由上做端口转发
+
 - name: 直连
   type: direct
 - name: 拒绝
   type: reject
+
+# === 机场订阅 ===
 proxy-providers:
   聚合机场:
     type: http
@@ -50,22 +72,28 @@ proxy-providers:
       interval: 180
       url: http://www.gstatic.com/generate_204
     proxy: 直连
+
+# ──────────────── 策略组 ────────────────
+
 proxy-groups:
+
+# ======= 回家开关（手机独有，切到 Home 走内网回家） =======
 - name: 回家开关
   type: select
   proxies:
-  - 所有-故转
-  - Home
+  - 所有-故转          # 默认，走机场
+  - Home               # 回家，访问内网设备
+
+# ======= 总开关（日常只操作这一个） =======
 - name: 通用选择
   type: select
   proxies:
-  - 链式开关
+  - 回家开关          # 默认跟回家开关
+  - 新加坡-故转
   - 所有-故转
-  - 所有-手动
   - 香港-故转
   - 台湾-故转
   - 日本-故转
-  - 新加坡-故转
   - 美国-故转
   - 其他-故转
   - 所有-自动
@@ -77,22 +105,18 @@ proxy-groups:
   - 其他-自动
   - 直连
   - 拒绝
-- name: 链式开关
-  type: select
-  proxies:
-  - 回家开关
-  - 住宅-故转
-  - 住宅-手动
+
+# ======= 业务分流组（默认跟通用选择，可按需独立切换） =======
 - name: 人工智能
   type: select
   proxies:
-  - 新加坡-故转
+  - 新加坡-故转        # AI服务首选新加坡，IP稳定
   - 美国-故转
-  - 链式开关
+  - 回家开关
   - 所有-故转
-  - 所有-手动
   - 直连
   - 拒绝
+
 - name: 流媒体
   type: select
   proxies:
@@ -103,100 +127,103 @@ proxy-groups:
   - 日本-故转
   - 新加坡-故转
   - 美国-故转
-  - 所有-手动
   - 直连
   - 拒绝
+
 - name: 谷歌
   type: select
   proxies:
   - 通用选择
   - 所有-故转
-  - 所有-手动
   - 直连
   - 拒绝
+
 - name: 微软
   type: select
   proxies:
   - 通用选择
   - 所有-故转
-  - 所有-手动
   - 直连
   - 拒绝
+
 - name: 苹果
   type: select
   proxies:
   - 通用选择
   - 所有-故转
-  - 所有-手动
   - 直连
   - 拒绝
+
 - name: 英伟达
   type: select
   proxies:
   - 通用选择
   - 所有-故转
-  - 所有-手动
   - 直连
   - 拒绝
+
 - name: 游戏
   type: select
   proxies:
   - 通用选择
   - 所有-故转
-  - 所有-手动
   - 直连
   - 拒绝
+
 - name: 加密货币
   type: select
   proxies:
   - 通用选择
   - 所有-故转
-  - 所有-手动
   - 直连
   - 拒绝
+
 - name: 颜色
   type: select
   proxies:
   - 通用选择
   - 所有-故转
-  - 所有-手动
   - 直连
   - 拒绝
+
 - name: 测试
   type: select
   proxies:
   - 通用选择
   - 所有-故转
-  - 所有-手动
   - 所有-自动
   - 直连
   - 拒绝
+
 - name: 国外
   type: select
   proxies:
   - 通用选择
   - 所有-故转
-  - 所有-手动
   - 直连
   - 拒绝
+
 - name: 国内
   type: select
   proxies:
   - 直连
   - 通用选择
   - 拒绝
+
 - name: 其他
   type: select
   proxies:
   - 通用选择
   - 所有-故转
-  - 所有-手动
   - 直连
   - 拒绝
+
+# ======= 机场底层组（后台辅助，不需要手动操作） =======
 - name: 所有-手动
   type: select
   use:
   - 聚合机场
+
 - name: 所有-自动
   type: url-test
   url: http://www.gstatic.com/generate_204
@@ -204,6 +231,7 @@ proxy-groups:
   tolerance: 50
   use:
   - 聚合机场
+
 - name: 所有-故转
   type: fallback
   interval: 180
@@ -211,22 +239,14 @@ proxy-groups:
   proxies:
   - 所有-手动
   - 所有-自动
-- name: 住宅-手动
-  type: select
-  proxies:
-  - 住宅-socks5
-- name: 住宅-故转
-  type: fallback
-  interval: 180
-  lazy: false
-  proxies:
-  - 住宅-手动
-  - 所有-故转
+
+# ======= 地区分组（后台辅助，不需要手动操作） =======
 - name: 香港-手动
   type: select
   filter: (?=.*(广港|香港|HK|Hong Kong|🇭🇰|HongKong)).*$
   use:
   - 聚合机场
+
 - name: 香港-自动
   type: url-test
   url: http://www.gstatic.com/generate_204
@@ -235,6 +255,7 @@ proxy-groups:
   filter: (?=.*(广港|香港|HK|Hong Kong|🇭🇰|HongKong)).*$
   use:
   - 聚合机场
+
 - name: 香港-故转
   type: fallback
   interval: 180
@@ -242,11 +263,13 @@ proxy-groups:
   proxies:
   - 香港-手动
   - 香港-自动
+
 - name: 台湾-手动
   type: select
   filter: (?=.*(广台|台湾|台灣|TW|Tai Wan|🇹🇼|TaiWan|Taiwan)).*$
   use:
   - 聚合机场
+
 - name: 台湾-自动
   type: url-test
   url: http://www.gstatic.com/generate_204
@@ -255,6 +278,7 @@ proxy-groups:
   filter: (?=.*(广台|台湾|台灣|TW|Tai Wan|🇹🇼|TaiWan|Taiwan)).*$
   use:
   - 聚合机场
+
 - name: 台湾-故转
   type: fallback
   interval: 180
@@ -262,11 +286,13 @@ proxy-groups:
   proxies:
   - 台湾-手动
   - 台湾-自动
+
 - name: 日本-手动
   type: select
   filter: (?=.*(广日|日本|JP|川日|东京|大阪|泉日|埼玉|沪日|深日|🇯🇵|Japan)).*$
   use:
   - 聚合机场
+
 - name: 日本-自动
   type: url-test
   url: http://www.gstatic.com/generate_204
@@ -275,6 +301,7 @@ proxy-groups:
   filter: (?=.*(广日|日本|JP|川日|东京|大阪|泉日|埼玉|沪日|深日|🇯🇵|Japan)).*$
   use:
   - 聚合机场
+
 - name: 日本-故转
   type: fallback
   interval: 180
@@ -282,11 +309,13 @@ proxy-groups:
   proxies:
   - 日本-手动
   - 日本-自动
+
 - name: 新加坡-手动
   type: select
   filter: (?=.*(广新|新加坡|SG|坡|狮城|🇸🇬|Singapore)).*$
   use:
   - 聚合机场
+
 - name: 新加坡-自动
   type: url-test
   url: http://www.gstatic.com/generate_204
@@ -295,6 +324,7 @@ proxy-groups:
   filter: (?=.*(广新|新加坡|SG|坡|狮城|🇸🇬|Singapore)).*$
   use:
   - 聚合机场
+
 - name: 新加坡-故转
   type: fallback
   interval: 180
@@ -302,11 +332,13 @@ proxy-groups:
   proxies:
   - 新加坡-手动
   - 新加坡-自动
+
 - name: 美国-手动
   type: select
   filter: (?=.*(广美|US|美国|纽约|波特兰|达拉斯|俄勒|凤凰城|费利蒙|洛杉|圣何塞|圣克拉|西雅|芝加|🇺🇸|United States)).*$
   use:
   - 聚合机场
+
 - name: 美国-自动
   type: url-test
   url: http://www.gstatic.com/generate_204
@@ -315,6 +347,7 @@ proxy-groups:
   filter: (?=.*(广美|US|美国|纽约|波特兰|达拉斯|俄勒|凤凰城|费利蒙|洛杉|圣何塞|圣克拉|西雅|芝加|🇺🇸|United States)).*$
   use:
   - 聚合机场
+
 - name: 美国-故转
   type: fallback
   interval: 180
@@ -322,12 +355,14 @@ proxy-groups:
   proxies:
   - 美国-手动
   - 美国-自动
+
 - name: 其他-手动
   type: select
   filter: ^((?!(直连|拒绝|广港|香港|HK|Hong Kong|🇭🇰|HongKong|广台|台湾|台灣|TW|Tai Wan|🇹🇼|TaiWan|Taiwan|广日|日本|JP|川日|东京|大阪|泉日|埼玉|沪日|深日|🇯🇵|Japan|广新|新加坡|SG|坡|狮城|🇸🇬|Singapore|广美|US|美国|纽约|波特兰|达拉斯|俄勒|凤凰城|费利蒙|洛杉|圣何塞|圣克拉|西雅|芝加|🇺🇸|United
     States)).)*$
   use:
   - 聚合机场
+
 - name: 其他-自动
   type: url-test
   url: http://www.gstatic.com/generate_204
@@ -337,6 +372,7 @@ proxy-groups:
     States)).)*$
   use:
   - 聚合机场
+
 - name: 其他-故转
   type: fallback
   interval: 180
@@ -344,13 +380,17 @@ proxy-groups:
   proxies:
   - 其他-手动
   - 其他-自动
+
+# ──────────────── 规则集 ────────────────
 rule-providers:
+  # 自用直连规则
   MyDirect:
     behavior: classical
     type: http
     url: https://raw.githubusercontent.com/easonlao/openclash-rules/master/rules/MyDirect.list
     interval: 86400
     path: ./MyDirect.list
+  # 广告拦截
   BanAD:
     behavior: classical
     type: http
@@ -363,6 +403,7 @@ rule-providers:
     url: https://raw.gitmirror.com/ACL4SSR/ACL4SSR/master/Clash/Providers/BanProgramAD.yaml
     interval: 86400
     path: ./ACL4SSR/BanProgramAD.yaml
+  # AI 服务
   ChatGPT:
     behavior: domain
     type: http
@@ -381,6 +422,7 @@ rule-providers:
     url: https://raw.gitmirror.com/metacubex/meta-rules-dat/meta/geo/geosite/groq.list
     interval: 86400
     path: ./AI/Groq.list
+  # 科技公司
   Google:
     behavior: domain
     type: http
@@ -411,12 +453,14 @@ rule-providers:
     url: https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/Nvidia/Nvidia.list
     interval: 86400
     path: ./Nvidia/Nvidia.list
+  # 加密货币
   Crypto:
     behavior: classical
     type: http
     url: https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/Cryptocurrency/Cryptocurrency.list
     interval: 86400
     path: ./Crypto/Crypto.list
+  # 流媒体
   Netflix:
     behavior: domain
     type: http
@@ -447,6 +491,7 @@ rule-providers:
     url: https://raw.gitmirror.com/metacubex/meta-rules-dat/meta/geo/geosite/hbo.list
     interval: 86400
     path: ./Streaming/HBO.list
+  # 游戏平台
   Steam:
     behavior: domain
     type: http
@@ -471,18 +516,21 @@ rule-providers:
     url: https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/EA/EA.list
     interval: 86400
     path: ./Game/EA.list
+  # 测试/兜底
   Test:
     behavior: classical
     type: http
     url: https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/ChinaTest/ChinaTest.list
     interval: 86400
     path: ./Test/Check.list
+  # 拦截
   Sex:
     behavior: classical
     type: http
     url: https://raw.githubusercontent.com/easonlao/openclash-rules/master/rules/Sex.list
     interval: 86400
     path: ./Block/Sex.list
+  # 国内/国外分流
   Proxy:
     behavior: classical
     type: http
@@ -513,30 +561,44 @@ rule-providers:
     url: https://raw.gitmirror.com/metacubex/meta-rules-dat/meta/geo/geosite/private.list
     interval: 86400
     path: ./China/Private.list
+
+# ──────────────── 分流规则 ────────────────
 rules:
+# 回家域名直连（避免被代理，手机独有）
+- DOMAIN-SUFFIX,l-home.top,直连
+# 自用直连（优先匹配）
 - RULE-SET,MyDirect,直连
+# 广告拦截
 - RULE-SET,BanAD,拒绝
 - RULE-SET,BanProgramAD,拒绝
+# AI 服务
 - RULE-SET,ChatGPT,人工智能
 - RULE-SET,Claude,人工智能
 - RULE-SET,Groq,人工智能
+# 科技公司
 - RULE-SET,Google,谷歌
 - RULE-SET,Microsoft,微软
 - RULE-SET,Apple,苹果
 - RULE-SET,AppleCN,苹果
 - RULE-SET,Nvidia,英伟达
+# 加密货币
 - RULE-SET,Crypto,加密货币
+# 流媒体
 - RULE-SET,TikTok,流媒体
 - RULE-SET,Netflix,流媒体
 - RULE-SET,Disney,流媒体
 - RULE-SET,HBO,流媒体
 - RULE-SET,Spotify,流媒体
+# 游戏平台
 - RULE-SET,Steam,游戏
 - RULE-SET,Epic,游戏
 - RULE-SET,EA,游戏
 - RULE-SET,Blizzard,游戏
+# 测试
 - RULE-SET,Test,测试
+# 拦截
 - RULE-SET,Sex,颜色
+# 兜底分流
 - RULE-SET,Proxy,国外
 - RULE-SET,Direct,国内
 - RULE-SET,China,国内
