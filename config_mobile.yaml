@@ -2,7 +2,7 @@
 # OpenClash 自用配置（手机版）
 # 基于 Hans 链式代理模板，精简适配单住宅IP场景
 # 适用：Clash Meta for Android
-# 差异：多了回家开关、Home节点、*.l-home.top 直连规则
+# 差异：多了回家开关、回家节点、*.l-home.top 直连规则
 # =========================================================
 
 # ──────────────── 基础设置 ────────────────
@@ -39,22 +39,23 @@ dns:
 # === 自建节点 ===
 proxies:
 # 回家代理（iStoreOS PassWall Server，域名走 Cloudflare IPv6）
-- name: Home
+- name: 回家
   type: ss
   server: socks.l-home.top
   port: 12320
   cipher: aes-256-gcm
-  password: 你的SS密码           # <--- 【必改】填写真实密码
+  password: Yx880721           # iStoreOS PassWall Server
 
-# 住宅IP（socks5协议，手机端不支持 dialer-proxy，住宅不可用）
+# 住宅IP（与家用配置一致，经住宅中继组连接）
 - name: 住宅-socks5
   type: socks5
   server: 154.44.87.101
   port: 9004
   username: cpgp1vg4
   password: AioxAY0oDQPC
-  # 注意：手机端 Clash Meta 可能不支持 dialer-proxy
-  # 如需在手机上走住宅，需在软路由上做端口转发
+  udp: true
+  skip-cert-verify: true
+  dialer-proxy: 住宅中继组
 
 - name: 直连
   type: direct
@@ -75,20 +76,22 @@ proxy-providers:
 
 # ──────────────── 策略组 ────────────────
 
-# 通用业务模板：默认跟随总开关，同时保留全量手动/自动和直连
+# 通用业务模板：手机版比家用版多一层回家开关
 default: &default
   type: select
   proxies:
+  - 回家开关
   - 通用选择
   - 所有-故转
   - 所有-手动
   - 所有-自动
   - 直连
 
-# AI / Google 模板：只比通用模板多一个住宅出口
+# AI / Google 模板：在通用模板基础上直接提供住宅出口
 ai-google-default: &ai-google-default
   type: select
   proxies:
+  - 回家开关
   - 通用选择
   - 住宅-socks5
   - 所有-故转
@@ -98,32 +101,39 @@ ai-google-default: &ai-google-default
 
 proxy-groups:
 
-# ======= 回家开关（手机独有，切到 Home 走内网回家） =======
+# ======= 回家开关（手机独有：通用或回家） =======
 - name: 回家开关
   type: select
   proxies:
-  - 所有-故转          # 默认，走机场
-  - Home               # 回家，访问内网设备
+  - 通用选择          # 默认，与家用配置一致
+  - 回家              # 回家，访问内网设备
 
 # ======= 总开关（日常只操作这一个） =======
 - name: 通用选择
   type: select
   proxies:
-  - 回家开关          # 默认跟回家开关
   - 新加坡-故转
-  - 所有-故转
-  - 香港-故转
-  - 台湾-故转
-  - 日本-故转
-  - 美国-故转
-  - 其他-故转
-  - 所有-自动
-  - 香港-自动
-  - 台湾-自动
-  - 日本-自动
+  - 新加坡-手动
   - 新加坡-自动
+  - 香港-故转
+  - 香港-手动
+  - 香港-自动
+  - 台湾-故转
+  - 台湾-手动
+  - 台湾-自动
+  - 日本-故转
+  - 日本-手动
+  - 日本-自动
+  - 美国-故转
+  - 美国-手动
   - 美国-自动
+  - 其他-故转
+  - 其他-手动
   - 其他-自动
+  - 所有-故转
+  - 所有-手动
+  - 所有-自动
+  - 住宅-socks5
   - 直连
 
 # ======= 业务分流组（默认跟通用选择，可按需独立切换） =======
@@ -164,6 +174,7 @@ proxy-groups:
   type: select
   proxies:
   - 直连
+  - 回家开关
   - 通用选择
   - 所有-故转
   - 所有-手动
@@ -171,6 +182,14 @@ proxy-groups:
 
 - name: 其他
   <<: *default
+
+# ======= 住宅链路（与家用配置一致） =======
+- name: 住宅中继组
+  type: select
+  proxies:
+  - 台湾-自动
+  - 日本-自动
+  - 其他-自动
 
 # ======= 机场底层组（后台辅助，不需要手动操作） =======
 - name: 所有-手动
@@ -337,13 +356,6 @@ proxy-groups:
 
 # ──────────────── 规则集 ────────────────
 rule-providers:
-  # 自用直连规则
-  MyDirect:
-    behavior: classical
-    type: http
-    url: https://raw.githubusercontent.com/easonlao/openclash-rules/master/rules/MyDirect.list
-    interval: 86400
-    path: ./MyDirect.list
   # 广告拦截
   BanAD:
     behavior: classical
@@ -477,13 +489,6 @@ rule-providers:
     url: https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/ChinaTest/ChinaTest.list
     interval: 86400
     path: ./Test/Check.list
-  # 拦截
-  Sex:
-    behavior: classical
-    type: http
-    url: https://raw.githubusercontent.com/easonlao/openclash-rules/master/rules/Sex.list
-    interval: 86400
-    path: ./Block/Sex.list
   # 国内/国外分流
   Proxy:
     behavior: classical
@@ -518,13 +523,28 @@ rule-providers:
 
 # ──────────────── 分流规则 ────────────────
 rules:
-# 回家域名直连（避免被代理，手机独有）
-- DOMAIN-SUFFIX,l-home.top,直连
-# 自用直连（优先匹配）
-- RULE-SET,MyDirect,直连
-# 广告拦截
+# 广告拦截（最高优先级）
 - RULE-SET,BanAD,拒绝
 - RULE-SET,BanProgramAD,拒绝
+# 自用直连（内联，避免私有 GitHub raw 规则无法加载）
+- IP-CIDR,10.0.0.0/8,直连,no-resolve
+- IP-CIDR,172.16.0.0/12,直连,no-resolve
+- IP-CIDR,192.168.0.0/16,直连,no-resolve
+- IP-CIDR,127.0.0.0/8,直连,no-resolve
+- IP-CIDR6,fc00::/7,直连,no-resolve
+- IP-CIDR6,fe80::/10,直连,no-resolve
+- IP-CIDR6,::1/128,直连,no-resolve
+- DOMAIN-SUFFIX,l-home.top,直连
+- DOMAIN,easonlao.ip-ddns.com,直连
+- DOMAIN-KEYWORD,m-team,直连
+- DOMAIN-SUFFIX,m-team.cc,直连
+- DOMAIN-SUFFIX,m-team.io,直连
+- DOMAIN-SUFFIX,manfuz.co,直连
+- DOMAIN,tracker.m-team.cc,直连
+- DOMAIN,tracker.m-team.io,直连
+- DOMAIN,tra1.m-team.cc,直连
+- DOMAIN,tra1.m-team.io,直连
+- DOMAIN,tra99.manfuz.co,直连
 # AI 服务
 - RULE-SET,ChatGPT,人工智能
 - RULE-SET,Claude,人工智能
@@ -550,11 +570,15 @@ rules:
 - RULE-SET,Blizzard,游戏
 # 测试
 - RULE-SET,Test,测试
-# 拦截
-- RULE-SET,Sex,颜色
-# 兜底分流
+# 自用颜色规则（内联）
+- DOMAIN-SUFFIX,t66y.com,颜色
+- DOMAIN-SUFFIX,pornhub.com,颜色
+- DOMAIN-SUFFIX,xvideos.com,颜色
+# 国外代理规则
 - RULE-SET,Proxy,国外
+# 国内直连规则
 - RULE-SET,Direct,国内
 - RULE-SET,China,国内
 - RULE-SET,ChinaIP,国内
+# 最终兜底（必须最后）
 - MATCH,其他

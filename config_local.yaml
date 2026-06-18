@@ -92,19 +92,27 @@ proxy-groups:
   type: select
   proxies:
   - 新加坡-故转        # 默认，机场新加坡
-  - 所有-故转          # 机场全局fallback
-  - 香港-故转
-  - 台湾-故转
-  - 日本-故转
-  - 美国-故转
-  - 其他-故转
-  - 所有-自动          # 机场全局自动测速
-  - 香港-自动
-  - 台湾-自动
-  - 日本-自动
+  - 新加坡-手动
   - 新加坡-自动
+  - 香港-故转
+  - 香港-手动
+  - 香港-自动
+  - 台湾-故转
+  - 台湾-手动
+  - 台湾-自动
+  - 日本-故转
+  - 日本-手动
+  - 日本-自动
+  - 美国-故转
+  - 美国-手动
   - 美国-自动
+  - 其他-故转
+  - 其他-手动
   - 其他-自动
+  - 所有-故转          # 机场全局fallback
+  - 所有-手动
+  - 所有-自动          # 机场全局自动测速
+  - 住宅-socks5        # 住宅出口，经实测可用的地区自动组中继
   - 直连
 
 # ======= 业务分流组（默认跟通用选择，可按需独立切换） =======
@@ -154,25 +162,12 @@ proxy-groups:
   <<: *default
 
 # ======= 住宅链路（后台辅助，不需要手动操作） =======
-# 住宅-故转：住宅IP优先，挂了fallback到机场
-- name: 住宅-故转
-  type: fallback
-  interval: 180
-  lazy: false
-  proxies:
-  - 住宅-socks5
-  - 所有-故转
-
-# 住宅中继组：选哪个机场节点作为跳板去连住宅IP
+# 住宅中继组：仅保留通过住宅 HTTPS 与出口验证的地区自动组
 - name: 住宅中继组
   type: select
   proxies:
-  - 所有-自动
-  - 香港-自动
   - 台湾-自动
   - 日本-自动
-  - 新加坡-自动
-  - 美国-自动
   - 其他-自动
 
 # ======= 机场底层组（后台辅助，不需要手动操作） =======
@@ -340,13 +335,6 @@ proxy-groups:
 
 # ──────────────── 规则集 ────────────────
 rule-providers:
-  # 自用直连规则
-  MyDirect:
-    behavior: classical
-    type: http
-    url: https://raw.githubusercontent.com/easonlao/openclash-rules/master/rules/MyDirect.list
-    interval: 86400
-    path: ./MyDirect.list
   # 广告拦截
   BanAD:
     behavior: classical
@@ -480,13 +468,6 @@ rule-providers:
     url: https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/ChinaTest/ChinaTest.list
     interval: 86400
     path: ./Test/Check.list
-  # 拦截
-  Sex:
-    behavior: classical
-    type: http
-    url: https://raw.githubusercontent.com/easonlao/openclash-rules/master/rules/Sex.list
-    interval: 86400
-    path: ./Block/Sex.list
   # 国内/国外分流
   Proxy:
     behavior: classical
@@ -521,11 +502,28 @@ rule-providers:
 
 # ──────────────── 分流规则 ────────────────
 rules:
-# 自用直连（优先匹配）
-- RULE-SET,MyDirect,直连
-# 广告拦截
+# 广告拦截（最高优先级）
 - RULE-SET,BanAD,拒绝
 - RULE-SET,BanProgramAD,拒绝
+# 自用直连（内联，避免私有 GitHub raw 规则无法加载）
+- IP-CIDR,10.0.0.0/8,直连,no-resolve
+- IP-CIDR,172.16.0.0/12,直连,no-resolve
+- IP-CIDR,192.168.0.0/16,直连,no-resolve
+- IP-CIDR,127.0.0.0/8,直连,no-resolve
+- IP-CIDR6,fc00::/7,直连,no-resolve
+- IP-CIDR6,fe80::/10,直连,no-resolve
+- IP-CIDR6,::1/128,直连,no-resolve
+- DOMAIN-SUFFIX,l-home.top,直连
+- DOMAIN,easonlao.ip-ddns.com,直连
+- DOMAIN-KEYWORD,m-team,直连
+- DOMAIN-SUFFIX,m-team.cc,直连
+- DOMAIN-SUFFIX,m-team.io,直连
+- DOMAIN-SUFFIX,manfuz.co,直连
+- DOMAIN,tracker.m-team.cc,直连
+- DOMAIN,tracker.m-team.io,直连
+- DOMAIN,tra1.m-team.cc,直连
+- DOMAIN,tra1.m-team.io,直连
+- DOMAIN,tra99.manfuz.co,直连
 # AI 服务
 - RULE-SET,ChatGPT,人工智能
 - RULE-SET,Claude,人工智能
@@ -551,11 +549,15 @@ rules:
 - RULE-SET,Blizzard,游戏
 # 测试
 - RULE-SET,Test,测试
-# 拦截
-- RULE-SET,Sex,颜色
-# 兜底分流
+# 自用颜色规则（内联）
+- DOMAIN-SUFFIX,t66y.com,颜色
+- DOMAIN-SUFFIX,pornhub.com,颜色
+- DOMAIN-SUFFIX,xvideos.com,颜色
+# 国外代理规则
 - RULE-SET,Proxy,国外
+# 国内直连规则
 - RULE-SET,Direct,国内
 - RULE-SET,China,国内
 - RULE-SET,ChinaIP,国内
+# 最终兜底（必须最后）
 - MATCH,其他
