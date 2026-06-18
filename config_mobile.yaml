@@ -45,7 +45,7 @@ dns:
     geoip-code: CN
 
 # ========================================
-# 🔑 你只需要改这里！填机场订阅链接就行
+# 🔑 你只需要改这里！填机场订阅和住宅IP节点信息
 # ========================================
 proxies:
   # 回家代理（固定，不用改，只要填密码）
@@ -56,22 +56,20 @@ proxies:
     cipher: aes-256-gcm
     password: "你的SS密码"  # ✅ 改成你的实际密码
 
+  # 住宅IP节点（链式代理用，手动配置，不是订阅）
+  - name: 住宅节点
+    type: ss
+    server: "你的住宅IP地址"  # ✅ 改成你的住宅IP
+    port: 12345                  # ✅ 改成端口
+    cipher: aes-256-gcm
+    password: "你的密码"          # ✅ 改成密码
+
 proxy-providers:
   # 你的主要机场节点
   机场订阅:
     type: http
     url: "https://你的机场订阅链接"  # ✅ 改成你的实际订阅链接
     interval: 3600  # 每小时自动更新
-    health-check:
-      enable: true
-      interval: 300
-      url: http://www.gstatic.com/generate_204
-
-  # 住宅IP（链式代理用），如果没有就注释掉
-  住宅IP:
-    type: http
-    url: "https://你的住宅IP订阅链接"  # ✅ 有就填，没有就注释掉
-    interval: 3600
     health-check:
       enable: true
       interval: 300
@@ -97,7 +95,7 @@ proxy-groups:
     type: select
     proxies:
       - 关闭        # 默认：不走链式
-      - 住宅IP-自动  # 走住宅IP
+      - 住宅节点    # 走住宅IP（手动配置的节点）
 
   # ----------------------------------------------------
   # 关闭 = 走回家开关，不经过链式
@@ -106,17 +104,6 @@ proxy-groups:
     type: select
     proxies:
       - 回家开关
-
-  # ----------------------------------------------------
-  # 住宅IP自动选（链式代理用）
-  # ----------------------------------------------------
-  - name: 住宅IP-自动
-    type: url-test
-    url: http://www.gstatic.com/generate_204
-    interval: 300
-    tolerance: 50
-    use:
-      - 住宅IP  # 自动从住宅IP订阅里选最快的
 
   # ----------------------------------------------------
   # 通用选择（大部分服务走这里，你的主要出口）
