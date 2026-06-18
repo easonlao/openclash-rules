@@ -58,12 +58,13 @@ proxy-providers:
 
 ```yaml
 proxies:
-  - name: 住宅节点
-    type: ss
+  - name: 住宅-socks5
+    type: socks5
     server: "你的住宅IP地址"  # ✅ 改这里
-    port: 12345              # ✅ 改这里
-    cipher: aes-256-gcm
-    password: "你的密码"      # ✅ 改这里
+    port: 12345                # ✅ 改这里
+    username: "你的用户名"      # ✅ 改这里
+    password: "你的密码"        # ✅ 改这里
+    dialer-proxy: 所有-故转      # 固定经机场中转
 ```
 
 **重要：住宅 IP 不是订阅链接！不要用 proxy-provider 拉取。**
@@ -98,7 +99,8 @@ proxies:
 通用选择（90% 流量的出口）
 ├─ 链式开关
 │  ├─ 关闭（默认）→ 回家开关（手机）/ 所有-故转（本地）
-│  └─ 住宅节点（手动配置，非订阅）
+│  ├─ 住宅-手动（住宅失效即断网）
+│  └─ 住宅-故转（住宅失效回退机场）
 ├─ 所有-故转（全量节点手动选择）
 ├─ 新加坡-故转
 ├─ 香港-故转
