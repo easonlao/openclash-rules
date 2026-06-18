@@ -4,7 +4,7 @@ area: project
 purpose: guide
 lifecycle: active
 created: 2026-06-16
-updated: 2026-06-18
+updated: 2026-06-19
 tags:
   - openclash
   - clash
@@ -23,7 +23,7 @@ tags:
 | **住宅 IP 独立** | 手动配置单个节点，不是订阅链接，保证出口唯一 |
 | **自动测速降级** | `url-test` 仅作备选，不设为默认，避免频繁切换 IP |
 | **AI 默认独立** | 默认固定机场出口；需要时可手动选择链式开关 |
-| **混合规则模式** | 自用规则手动维护（≤10条），通用规则 ACL4SSR 自动更新 |
+| **混合规则模式** | 自用规则手动维护（≤10条），通用规则 meta-rules-dat/blackmatrix7 自动更新 |
 
 ---
 
@@ -31,16 +31,17 @@ tags:
 
 - Mihomo 官方规则说明：`https://wiki.metacubex.one/en/config/rules/`
 - Mihomo 官方示例配置：`https://wiki.metacubex.one/en/example/conf/`
-- ACL4SSR 规则集：`https://github.com/ACL4SSR/ACL4SSR`
+- MetaCubeX 规则库：`https://github.com/MetaCubeX/meta-rules-dat`
+- blackmatrix7 规则库：`https://github.com/blackmatrix7/ios_rule_script`
 
 ---
 
 ## 📦 配置文件
 
-| 文件 | 用途 | 大小 | 你需要改的地方 |
-|------|------|------|---------------|
-| `config_local.yaml` | 本地软路由 OpenClash 用 | ~14KB | 填机场订阅链接 + 住宅IP节点信息 |
-| `config_mobile.yaml` | 手机 Clash Mi 用（含回家代理） | ~14KB | 填机场订阅链接 + 住宅IP节点信息 + Home的SS密码 |
+| 文件 | 用途 | 你需要改的地方 |
+|------|------|---------------|
+| `config_local.yaml` | 本地软路由 OpenClash 用 | 填机场订阅链接 + 住宅IP节点信息 |
+| `config_mobile.yaml` | 手机 Clash Mi 用（含回家代理） | 填机场订阅链接 + 住宅IP节点信息 + Home的SS密码 |
 
 ---
 
@@ -50,7 +51,7 @@ tags:
 
 ```yaml
 proxy-providers:
-  机场订阅:
+  聚合机场:
     url: "https://你的机场订阅链接"  # ✅ 改这里
 ```
 
@@ -64,7 +65,7 @@ proxies:
     port: 12345                # ✅ 改这里
     username: "你的用户名"      # ✅ 改这里
     password: "你的密码"        # ✅ 改这里
-    dialer-proxy: 住宅-中转      # 经独立机场选择组中转
+    dialer-proxy: 住宅中继组    # 经独立机场选择组中转
 ```
 
 **重要：住宅 IP 不是订阅链接！不要用 proxy-provider 拉取。**
@@ -83,7 +84,7 @@ proxies:
 
 1. **IP 稳定优先**：默认走「故转」固定节点选择，不自动测速，不频繁切换 IP
 2. **住宅 IP 手动配置**：单个节点手动填，不是订阅，出口唯一
-3. **几百上千条通用规则全靠社区自动维护**：通过 rule-provider 自动从 ACL4SSR 更新
+3. **几百上千条通用规则全靠社区自动维护**：通过 rule-provider 自动从 meta-rules-dat/blackmatrix7 更新
 4. **你只需要维护不到 10 条规则**：私有网络 + 个人域名 + m-team，一年到头也不用改
 5. **按地区过滤节点**：自动从订阅里过滤「新加坡/香港/日本/美国」节点，按名字匹配
 6. **AI 与 Google 独立增强**：本地版在通用模板基础上额外提供住宅 SOCKS5
@@ -149,7 +150,36 @@ proxies:
 
 ---
 
+## 发布前验证
+
+```bash
+python3 validate_config.py
+```
+
+验证脚本检查项：
+1. YAML 语法
+2. 顶级字段
+3. 重复规则集名称
+4. 策略组引用顺序
+5. 规则集与规则引用匹配
+6. 规则集命名格式
+7. 策略组引用有效性
+8. 规则集锚点格式（核心）
+9. URL 可访问性
+
+**验证失败不能发布！**
+
+---
+
 ## 更新日志
+
+### 2026-06-19
+
+- ✅ 同步手机版规则集：添加 25 个缺失规则集
+- ✅ 修复规则引用格式：添加 `/ Domain` 后缀
+- ✅ 删除自创策略组，规则引用改为已有策略组
+- ✅ 完善验证脚本：增加锚点格式检测 + pre-commit hook
+- ✅ 清理一次性脚本，只保留发布验证脚本
 
 ### 2026-06-18 重大修正
 
