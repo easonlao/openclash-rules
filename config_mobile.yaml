@@ -465,9 +465,9 @@ rules:
 - RULE-SET,AppleCN / Domain,苹果
 - RULE-SET,Apple-Custome / Domain,苹果
 - RULE-SET,Nvidia / Domain,英伟达
-- RULE-SET,GitHub / Domain,开发服务
-- RULE-SET,Copilot / Domain,开发服务
-- RULE-SET,Amazon / Domain,购物
+- RULE-SET,GitHub / Domain,国外
+- RULE-SET,Copilot / Domain,微软
+- RULE-SET,Amazon / Domain,国外
 - RULE-SET,Globe / Domain,国外
 # 加密货币
 - RULE-SET,Crypto / Domain,加密货币
@@ -482,7 +482,7 @@ rules:
 - RULE-SET,Spotify / Domain,流媒体
 - RULE-SET,Crunchyroll / Domain,流媒体
 - RULE-SET,Popcorn / Domain,流媒体
-- RULE-SET,Reddit / Domain,社交媒体
+- RULE-SET,Reddit / Domain,国外
 # 游戏平台
 - RULE-SET,Steam / Domain,游戏
 - RULE-SET,Epic / Domain,游戏
