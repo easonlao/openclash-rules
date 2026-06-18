@@ -46,12 +46,14 @@ dns:
 proxies:
   # 住宅IP节点（链式代理用，手动配置，不是订阅）
   # 注意：住宅节点在国外，必须通过机场节点才能连上
-  # dialer-proxy 让这个节点的连接，先走机场出去
+  # 住宅IP节点（链式代理用，手动配置，不是订阅）
+  # 服务商：rola-ip.co，需要 username + password 双认证
   - name: 住宅节点
     type: ss
     server: "你的住宅IP地址"  # ✅ 改成你的住宅IP
     port: 12345                  # ✅ 改成端口
     cipher: aes-256-gcm
+    username: "你的用户名"        # ✅ 加上用户名
     password: "你的密码"          # ✅ 改成密码
     dialer-proxy: 所有-故转    # ✅ 关键：连住宅节点先走机场出去
 
