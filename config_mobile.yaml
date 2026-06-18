@@ -161,9 +161,6 @@ proxy-groups:
 - name: 加密货币
   <<: *default
 
-- name: 颜色
-  <<: *default
-
 - name: 测试
   <<: *default
 
@@ -397,7 +394,6 @@ rule-providers:
   ChinaIP / Domain: {<<: *class, url: "https://raw.githubusercontent.com/metacubex/meta-rules-dat/meta/geo/geoip/cn.list"}
   Private / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/private.mrs"}
   # 科技公司补充
-  Apple-CN / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/apple-cn.mrs"}
   Apple-Custome / Domain: {<<: *class, url: "https://gh-proxy.com/raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Apple/Apple.list"}
   GitHub / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/github.mrs"}
   Copilot / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/github.mrs"}
@@ -441,15 +437,6 @@ rules:
 - IP-CIDR,127.0.0.0/8,直连,no-resolve
 - DOMAIN-SUFFIX,l-home.top,直连
 - DOMAIN,easonlao.ip-ddns.com,直连
-- DOMAIN-KEYWORD,m-team,直连
-- DOMAIN-SUFFIX,m-team.cc,直连
-- DOMAIN-SUFFIX,m-team.io,直连
-- DOMAIN-SUFFIX,manfuz.co,直连
-- DOMAIN,tracker.m-team.cc,直连
-- DOMAIN,tracker.m-team.io,直连
-- DOMAIN,tra1.m-team.cc,直连
-- DOMAIN,tra1.m-team.io,直连
-- DOMAIN,tra99.manfuz.co,直连
 # AI 服务
 - RULE-SET,ChatGPT / Domain,人工智能
 - RULE-SET,Claude / Domain,人工智能
@@ -460,6 +447,7 @@ rules:
 - RULE-SET,Gemini / Domain,人工智能
 # 科技公司
 - RULE-SET,Google / Domain,谷歌
+- RULE-SET,Google / IP,谷歌
 - RULE-SET,Microsoft / Domain,微软
 - RULE-SET,Apple / Domain,苹果
 - RULE-SET,AppleCN / Domain,苹果
@@ -477,6 +465,7 @@ rules:
 # 流媒体
 - RULE-SET,TikTok / Domain,流媒体
 - RULE-SET,Netflix / Domain,流媒体
+- RULE-SET,Netflix / IP,流媒体
 - RULE-SET,Disney / Domain,流媒体
 - RULE-SET,HBO / Domain,流媒体
 - RULE-SET,Spotify / Domain,流媒体
@@ -493,10 +482,6 @@ rules:
 - RULE-SET,UBI / Domain,游戏
 # 测试
 - RULE-SET,Test / Domain,测试
-# 自用颜色规则（内联）
-- DOMAIN-SUFFIX,t66y.com,颜色
-- DOMAIN-SUFFIX,pornhub.com,颜色
-- DOMAIN-SUFFIX,xvideos.com,颜色
 # 广告拦截补充
 - RULE-SET,Block / Domain,拒绝
 - RULE-SET,Adobe / Domain,拒绝
@@ -505,7 +490,9 @@ rules:
 - RULE-SET,Proxy / Domain,国外
 # 国内直连规则
 - RULE-SET,Direct / Domain,国内
+- RULE-SET,Private / Domain,国内
 - RULE-SET,China / Domain,国内
+- RULE-SET,China / IP,国内
 - RULE-SET,ChinaIP / Domain,国内
 # 最终兜底（必须最后）
 - MATCH,其他

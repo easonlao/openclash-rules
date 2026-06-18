@@ -338,15 +338,6 @@ proxy-groups:
   - 所有-自动
   - 直连
 
-- name: 颜色
-  type: select
-  proxies:
-  - 通用选择
-  - 所有-故转
-  - 所有-手动
-  - 所有-自动
-  - 直连
-
 - name: 测试
   type: select
   proxies:
@@ -446,7 +437,6 @@ rule-providers:
   China / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/cn.mrs"}
   China / IP: {<<: *ip, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geoip/cn.mrs"}
   # 自用直连规则（自己仓库维护）
-  # 自用颜色规则（自己仓库维护）
 #  Twitter: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/x.mrs"}
 #  WhatsApp: {<<: *class, url: "https://gh-proxy.com/raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Whatsapp/Whatsapp.list"}
 #  Facebook: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/facebook.mrs"}
@@ -459,21 +449,27 @@ rules:
 # 广告拦截（最高优先级）
 - RULE-SET,BanAD / Domain,拒绝
 - RULE-SET,BanProgramAD / Domain,拒绝
-# 自用颜色规则
+- RULE-SET,Block / Domain,拒绝
+- RULE-SET,Adobe / Domain,拒绝
+- RULE-SET,AdobeActivation / Domain,拒绝
 # AI 服务
 - RULE-SET,ChatGPT / Domain,人工智能
 - RULE-SET,Claude / Domain,人工智能
 - RULE-SET,Groq / Domain,人工智能
 - RULE-SET,Grok / Domain,人工智能
 - RULE-SET,Meta AI / Domain,人工智能
+- RULE-SET,Gemini / Domain,人工智能
 - RULE-SET,Perplexity / Domain,人工智能
 # 科技公司
 - RULE-SET,Google / Domain,谷歌
-- RULE-SET,Google / Domain,谷歌
+- RULE-SET,Google / IP,谷歌
 - RULE-SET,Microsoft / Domain,微软
 - RULE-SET,Apple / Domain,苹果
 - RULE-SET,Apple-CN / Domain,苹果
 - RULE-SET,Nvidia / Domain,英伟达
+- RULE-SET,Apple-Custome / Domain,苹果
+- RULE-SET,Copilot / Domain,微软
+- RULE-SET,GitHub / Domain,国外
 # 加密货币
 - RULE-SET,Crypto / Domain,加密货币
 - RULE-SET,OKX / Domain,加密货币
@@ -482,11 +478,13 @@ rules:
 # 流媒体
 - RULE-SET,TikTok / Domain,流媒体
 - RULE-SET,Netflix / Domain,流媒体
-- RULE-SET,Netflix / Domain,流媒体,no-resolve
+- RULE-SET,Netflix / IP,流媒体,no-resolve
 - RULE-SET,Disney / Domain,流媒体
 - RULE-SET,Amazon / Domain,流媒体
 - RULE-SET,HBO / Domain,流媒体
 - RULE-SET,Spotify / Domain,流媒体
+- RULE-SET,Crunchyroll / Domain,流媒体
+- RULE-SET,Popcorn / Domain,流媒体
 # 游戏
 - RULE-SET,Steam / Domain,游戏
 - RULE-SET,Epic / Domain,游戏
@@ -500,8 +498,9 @@ rules:
 # 兜底分流
 - RULE-SET,Proxy / Domain,国外
 - RULE-SET,Globe / Domain,国外
+- RULE-SET,Reddit / Domain,国外
 - RULE-SET,Direct / Domain,国内
 - RULE-SET,China / Domain,国内
-- RULE-SET,China / Domain,国内,no-resolve
+- RULE-SET,China / IP,国内,no-resolve
 - RULE-SET,Private / Domain,国内
 - MATCH,其他
