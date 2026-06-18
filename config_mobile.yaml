@@ -360,166 +360,140 @@ rule-providers:
   BanAD:
     behavior: classical
     type: http
-    url: https://raw.gitmirror.com/ACL4SSR/ACL4SSR/master/Clash/Providers/BanAD.yaml
+    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Providers/BanAD.yaml
     interval: 86400
-    path: ./ACL4SSR/BanAD.yaml
   BanProgramAD:
     behavior: classical
     type: http
-    url: https://raw.gitmirror.com/ACL4SSR/ACL4SSR/master/Clash/Providers/BanProgramAD.yaml
+    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Providers/BanProgramAD.yaml
     interval: 86400
-    path: ./ACL4SSR/BanProgramAD.yaml
   # AI 服务
   ChatGPT:
     behavior: domain
     type: http
-    url: https://raw.gitmirror.com/metacubex/meta-rules-dat/meta/geo/geosite/openai.list
+    url: https://raw.githubusercontent.com/metacubex/meta-rules-dat/meta/geo/geosite/openai.list
     interval: 86400
-    path: ./AI/ChatGPT.list
   Claude:
     behavior: classical
     type: http
-    url: https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/Claude/Claude.list
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Claude/Claude.list
     interval: 86400
-    path: ./AI/Claude.list
   Groq:
     behavior: domain
     type: http
-    url: https://raw.gitmirror.com/metacubex/meta-rules-dat/meta/geo/geosite/groq.list
+    url: https://raw.githubusercontent.com/metacubex/meta-rules-dat/meta/geo/geosite/groq.list
     interval: 86400
-    path: ./AI/Groq.list
   # 科技公司
   Google:
     behavior: domain
     type: http
-    url: https://raw.gitmirror.com/metacubex/meta-rules-dat/meta/geo/geosite/google.list
+    url: https://raw.githubusercontent.com/metacubex/meta-rules-dat/meta/geo/geosite/google.list
     interval: 86400
-    path: ./Google/Google.list
   Microsoft:
     behavior: domain
     type: http
-    url: https://raw.gitmirror.com/metacubex/meta-rules-dat/meta/geo/geosite/microsoft.list
+    url: https://raw.githubusercontent.com/metacubex/meta-rules-dat/meta/geo/geosite/microsoft.list
     interval: 86400
-    path: ./Microsoft/Microsoft.list
   Apple:
     behavior: domain
     type: http
-    url: https://raw.gitmirror.com/metacubex/meta-rules-dat/meta/geo/geosite/apple.list
+    url: https://raw.githubusercontent.com/metacubex/meta-rules-dat/meta/geo/geosite/apple.list
     interval: 86400
-    path: ./Apple/Apple.list
   AppleCN:
     behavior: domain
     type: http
-    url: https://raw.gitmirror.com/metacubex/meta-rules-dat/meta/geo/geosite/apple-cn.list
+    url: https://raw.githubusercontent.com/metacubex/meta-rules-dat/meta/geo/geosite/apple-cn.list
     interval: 86400
-    path: ./Apple/AppleCN.list
   Nvidia:
     behavior: classical
     type: http
-    url: https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/Nvidia/Nvidia.list
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Nvidia/Nvidia.list
     interval: 86400
-    path: ./Nvidia/Nvidia.list
   # 加密货币
   Crypto:
     behavior: classical
     type: http
-    url: https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/Cryptocurrency/Cryptocurrency.list
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Cryptocurrency/Cryptocurrency.list
     interval: 86400
-    path: ./Crypto/Crypto.list
   # 流媒体
   Netflix:
     behavior: domain
     type: http
-    url: https://raw.gitmirror.com/metacubex/meta-rules-dat/meta/geo/geosite/netflix.list
+    url: https://raw.githubusercontent.com/metacubex/meta-rules-dat/meta/geo/geosite/netflix.list
     interval: 86400
-    path: ./Streaming/Netflix.list
   Disney:
     behavior: domain
     type: http
-    url: https://raw.gitmirror.com/metacubex/meta-rules-dat/meta/geo/geosite/disney.list
+    url: https://raw.githubusercontent.com/metacubex/meta-rules-dat/meta/geo/geosite/disney.list
     interval: 86400
-    path: ./Streaming/Disney.list
   Spotify:
     behavior: domain
     type: http
-    url: https://raw.gitmirror.com/metacubex/meta-rules-dat/meta/geo/geosite/spotify.list
+    url: https://raw.githubusercontent.com/metacubex/meta-rules-dat/meta/geo/geosite/spotify.list
     interval: 86400
-    path: ./Streaming/Spotify.list
   TikTok:
     behavior: domain
     type: http
-    url: https://raw.gitmirror.com/metacubex/meta-rules-dat/meta/geo/geosite/tiktok.list
+    url: https://raw.githubusercontent.com/metacubex/meta-rules-dat/meta/geo/geosite/tiktok.list
     interval: 86400
-    path: ./Streaming/TikTok.list
   HBO:
     behavior: domain
     type: http
-    url: https://raw.gitmirror.com/metacubex/meta-rules-dat/meta/geo/geosite/hbo.list
+    url: https://raw.githubusercontent.com/metacubex/meta-rules-dat/meta/geo/geosite/hbo.list
     interval: 86400
-    path: ./Streaming/HBO.list
   # 游戏平台
   Steam:
     behavior: domain
     type: http
-    url: https://raw.gitmirror.com/metacubex/meta-rules-dat/meta/geo/geosite/steam.list
+    url: https://raw.githubusercontent.com/metacubex/meta-rules-dat/meta/geo/geosite/steam.list
     interval: 86400
-    path: ./Game/Steam.list
   Epic:
     behavior: classical
     type: http
-    url: https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/Epic/Epic.list
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Epic/Epic.list
     interval: 86400
-    path: ./Game/Epic.list
   Blizzard:
     behavior: classical
     type: http
-    url: https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/Blizzard/Blizzard.list
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Blizzard/Blizzard.list
     interval: 86400
-    path: ./Game/Blizzard.list
   EA:
     behavior: classical
     type: http
-    url: https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/EA/EA.list
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/EA/EA.list
     interval: 86400
-    path: ./Game/EA.list
   # 测试/兜底
   Test:
     behavior: classical
     type: http
-    url: https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/ChinaTest/ChinaTest.list
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/ChinaTest/ChinaTest.list
     interval: 86400
-    path: ./Test/Check.list
   # 国内/国外分流
   Proxy:
     behavior: classical
     type: http
-    url: https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/Proxy/Proxy.list
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Proxy/Proxy.list
     interval: 86400
-    path: ./Proxy/Proxy.list
   Direct:
     behavior: classical
     type: http
-    url: https://raw.gitmirror.com/blackmatrix7/ios_rule_script/master/rule/Clash/Direct/Direct.list
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Direct/Direct.list
     interval: 86400
-    path: ./China/Direct.list
   China:
     behavior: domain
     type: http
-    url: https://raw.gitmirror.com/metacubex/meta-rules-dat/meta/geo/geosite/cn.list
+    url: https://raw.githubusercontent.com/metacubex/meta-rules-dat/meta/geo/geosite/cn.list
     interval: 86400
-    path: ./China/China.list
   ChinaIP:
     behavior: ipcidr
     type: http
-    url: https://raw.gitmirror.com/metacubex/meta-rules-dat/meta/geo/geoip/cn.list
+    url: https://raw.githubusercontent.com/metacubex/meta-rules-dat/meta/geo/geoip/cn.list
     interval: 86400
-    path: ./China/ChinaIP.list
   Private:
     behavior: domain
     type: http
-    url: https://raw.gitmirror.com/metacubex/meta-rules-dat/meta/geo/geosite/private.list
+    url: https://raw.githubusercontent.com/metacubex/meta-rules-dat/meta/geo/geosite/private.list
     interval: 86400
-    path: ./China/Private.list
 
 # ──────────────── 分流规则 ────────────────
 rules:
