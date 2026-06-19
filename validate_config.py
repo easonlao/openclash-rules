@@ -15,13 +15,18 @@ import requests
 import sys
 import re
 import argparse
+from pathlib import Path
 from urllib.parse import urlparse
+
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
+    sys.stderr.reconfigure(encoding='utf-8')
 
 
 def load_config(filename):
     """加载并解析 YAML 配置文件，同时返回原始文本用于重复键检查"""
     try:
-        with open(filename, 'r') as f:
+        with open(filename, 'r', encoding='utf-8') as f:
             raw_text = f.read()
         return yaml.safe_load(raw_text), None, raw_text
     except yaml.YAMLError as e:
@@ -291,12 +296,12 @@ def check_duplicate_yaml_keys(raw_text, errors):
 
 
 def check_cross_config_consistency(config1, config2, errors, name1="config1", name2="config2"):
-    """检查 15: 跨配置语义一致性（手机版和家用版除了回家开关必须一致）
+    """检查跨配置语义一致性和两端各自的私网路由约束。
 
-    手机版与家用版唯一允许的差异：
-    1. 多一个 'Home' 代理节点
+    手机版允许的功能差异：
+    1. 多一个 '回家' 代理节点
     2. 多一个 '回家开关' 策略组
-    3. 所有策略组的第一个选项包含 '回家开关'
+    3. RFC1918 私网经回家开关，且 l-home.top 直连防回环
     """
     # 检查 rule-providers 必须完全一致
     rp1 = set(config1.get('rule-providers', {}).keys())
@@ -321,6 +326,83 @@ def check_cross_config_consistency(config1, config2, errors, name1="config1", na
     if diff - allowed_diff:
         unexpected = sorted(diff - allowed_diff)
         errors.append(f"跨配置不一致: 不允许的策略组差异: {', '.join(unexpected)}")
+
+    expected_counts = ((name1, config1, 25, 31), (name2, config2, 25, 32))
+    for config_name, config, provider_count, group_count in expected_counts:
+        actual_providers = len(config.get('rule-providers', {}))
+        actual_groups = len(config.get('proxy-groups', []))
+        if actual_providers != provider_count:
+            errors.append(
+                f"Layer 2 基线: {config_name} 应有 {provider_count} 个规则集，当前 {actual_providers} 个"
+            )
+        if actual_groups != group_count:
+            errors.append(
+                f"Layer 2 基线: {config_name} 应有 {group_count} 个策略组，当前 {actual_groups} 个"
+            )
+
+    private_cidrs = ('10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16')
+    for config_name, config, policy in (
+        (name1, config1, '直连'),
+        (name2, config2, '回家开关'),
+    ):
+        rules = set(config.get('rules', []))
+        for cidr in private_cidrs:
+            expected = f"IP-CIDR,{cidr},{policy},no-resolve"
+            if expected not in rules:
+                errors.append(f"私网路由: {config_name} 缺少 '{expected}'")
+        loopback = "IP-CIDR,127.0.0.0/8,直连,no-resolve"
+        if loopback not in rules:
+            errors.append(f"私网路由: {config_name} 缺少 '{loopback}'")
+
+    mobile_rules = set(config2.get('rules', []))
+    if "DOMAIN-SUFFIX,l-home.top,直连" not in mobile_rules:
+        errors.append("手机版防回环: 缺少 'DOMAIN-SUFFIX,l-home.top,直连'")
+
+
+def check_layer3_extension(extension_path, base_configs, errors):
+    """验证 Layer 3 合并源的引用完整性，并阻止与主配置名称冲突。"""
+    path = Path(extension_path)
+    if not path.exists():
+        errors.append(f"Layer 3 扩展不存在: {extension_path}")
+        return
+
+    raw_text = path.read_text(encoding='utf-8')
+    provider_section, separator, remainder = raw_text.partition(
+        '# ──────────────── 扩展策略组（proxy-groups 下复制） ────────────────'
+    )
+    if not separator:
+        errors.append("Layer 3 扩展缺少策略组分隔标记")
+        return
+    group_section, separator, rules_section = remainder.partition(
+        '# ──────────────── 扩展规则（rules 下复制） ────────────────'
+    )
+    if not separator:
+        errors.append("Layer 3 扩展缺少规则分隔标记")
+        return
+
+    provider_names = set(re.findall(r'^  ([^#\n][^:]+ / (?:Domain|IP)):', provider_section, re.MULTILINE))
+    group_names = set(re.findall(r'^- name:\s*(.+?)\s*$', group_section, re.MULTILINE))
+    rule_matches = re.findall(r'^- RULE-SET,([^,]+),([^,\n]+)', rules_section, re.MULTILINE)
+    rule_refs = {provider.strip() for provider, _ in rule_matches}
+    policy_refs = {policy.strip() for _, policy in rule_matches}
+
+    for name in sorted(provider_names - rule_refs):
+        errors.append(f"Layer 3 孤立规则集: '{name}' 没有对应规则行")
+    for name in sorted(rule_refs - provider_names):
+        errors.append(f"Layer 3 悬空引用: 规则引用了未定义的 '{name}'")
+
+    for config_name, config in base_configs:
+        base_names = {
+            item.get('name') for section in ('proxies', 'proxy-groups')
+            for item in config.get(section, []) if isinstance(item, dict)
+        }
+        collisions = sorted(group_names & base_names)
+        for name in collisions:
+            errors.append(f"Layer 3 名称冲突: '{name}' 已存在于{config_name}主配置")
+
+        valid_policies = base_names | group_names | {'DIRECT', 'REJECT', '直连', '拒绝'}
+        for policy in sorted(policy_refs - valid_policies):
+            errors.append(f"Layer 3 策略悬空: '{policy}' 在{config_name}主配置和扩展中均未定义")
 
 
 def check_url_accessibility(config, warnings, timeout=5):
@@ -380,9 +462,12 @@ def validate_config(filename, skip_url_check=False, url_timeout=5, raw_text=""):
     ]
 
     warnings_checks = [
-        ("策略组引用顺序", check_group_order),
         ["YAML 重复键警告", lambda c, e: check_duplicate_yaml_keys(raw_text, warnings)],
     ]
+
+    # 手机版按 UI 使用频率排列策略组，允许引用后置的基础组；Mihomo 不要求定义顺序。
+    if Path(filename).name != 'config_mobile.yaml':
+        warnings_checks.insert(0, ("策略组引用顺序", check_group_order))
 
     for i, (desc, fn) in enumerate(checks, 1):
         before = len(errors)
@@ -405,8 +490,8 @@ def validate_config(filename, skip_url_check=False, url_timeout=5, raw_text=""):
 
     # URL 检查（可选，较慢）
     if not skip_url_check:
-        idx = len(checks) + 1
-        print(f"\n[{idx}/{len(checks) + 1}] URL 可访问性...", end=" ")
+        idx = len(checks) + len(warnings_checks) + 1
+        print(f"\n[{idx}/{idx}] URL 可访问性...", end=" ")
         checked = check_url_accessibility(config, warnings, url_timeout)
         print(f"✅ 已检查 {checked} 个 URL（{len(warnings)} 个警告）")
 
@@ -447,13 +532,13 @@ def main():
                                                              url_timeout=args.url_timeout)
         all_errors.extend(errors)
         all_warnings.extend(warnings)
-        configs[filename] = config
+        configs[Path(filename).name] = config
         print()
 
     # 跨配置一致性检查（如果有两个配置文件）
     if len(configs) >= 2 and 'config_local.yaml' in configs and 'config_mobile.yaml' in configs:
         print("=" * 60)
-        print("[14/14] 跨配置一致性检查...", end=" ")
+        print("[边界] 跨配置与 Layer 2 基线检查...", end=" ")
         cross_errors = []
         check_cross_config_consistency(
             configs['config_local.yaml'], configs['config_mobile.yaml'],
@@ -466,6 +551,21 @@ def main():
             for e in cross_errors:
                 print(f"  - {e}")
         all_errors.extend(cross_errors)
+
+        print("[边界] Layer 3 扩展完整性检查...", end=" ")
+        extension_errors = []
+        check_layer3_extension(
+            Path(__file__).resolve().parent / 'extensions' / 'layer3_extra.yaml',
+            [('家用版', configs['config_local.yaml']), ('手机版', configs['config_mobile.yaml'])],
+            extension_errors,
+        )
+        if not extension_errors:
+            print("✅")
+        else:
+            print(f"❌ +{len(extension_errors)}")
+            for e in extension_errors:
+                print(f"  - {e}")
+        all_errors.extend(extension_errors)
 
     # 最终结论
     if len(args.files) > 1:

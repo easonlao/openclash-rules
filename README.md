@@ -1,5 +1,5 @@
 ---
-title: OpenClash 规则重写
+title: openclash-config-tools
 area: project
 purpose: guide
 lifecycle: active
@@ -11,7 +11,7 @@ tags:
   - rules
 ---
 
-# OpenClash 规则重写
+# openclash-config-tools
 
 ## 核心设计原则
 
@@ -160,16 +160,7 @@ proxies:
 python3 validate_config.py
 ```
 
-验证脚本检查项：
-1. YAML 语法
-2. 顶级字段
-3. 重复规则集名称
-4. 策略组引用顺序
-5. 规则集与规则引用匹配
-6. 规则集命名格式
-7. 策略组引用有效性
-8. 规则集锚点格式（核心）
-9. URL 可访问性
+验证脚本覆盖 YAML、引用、敏感字段、策略循环、唯一 MATCH、两端 Layer 2 数量与私网路由差异、Layer 3 扩展完整性，以及 provider URL 可访问性。
 
 **验证失败不能发布！**
 
@@ -179,7 +170,7 @@ python3 validate_config.py
 
 ### 2026-06-19 Architecture v2.0 分层架构落地
 
-- ✅ Layer 2 基线裁剪完成：主配置规则集 42 → 22，策略组各减少 4 个
+- ✅ Layer 2 基线裁剪完成：主配置规则集 42 → 25，家用版 31 个策略组、手机版 32 个策略组
 - ✅ Layer 3 可选扩展：广告拦截、游戏、加密货币、英伟达、亚马逊、测试全部移入 `extensions/layer3_extra.yaml`
 - ✅ 分层原则：Layer 2 只保留通用必需功能；Layer 3 高级功能按需启用
 - ✅ 验证脚本更新：跨配置一致性检查 + 敏感字段检测

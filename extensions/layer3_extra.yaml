@@ -36,11 +36,7 @@
   Test / Domain: {<<: *class, url: "https://gh-proxy.com/raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/ChinaTest/ChinaTest.list"}
 
 # ──────────────── 扩展策略组（proxy-groups 下复制） ────────────────
-- name: 拒绝
-  type: select
-  proxies:
-  - REJECT
-  - DIRECT
+# 广告规则直接复用主配置已有的「拒绝」reject 节点，不要重复定义同名策略组。
 
 - name: 英伟达
   type: select
