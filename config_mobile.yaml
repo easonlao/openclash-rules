@@ -392,9 +392,9 @@ rule-providers:
 rules:
 # 广告拦截（已移至 Layer 3 可选扩展）
 # 基础私网直连（Layer 2 基础网络规则）
-- IP-CIDR,10.0.0.0/8,直连,no-resolve
-- IP-CIDR,172.16.0.0/12,直连,no-resolve
-- IP-CIDR,192.168.0.0/16,直连,no-resolve
+- IP-CIDR,10.0.0.0/8,回家开关,no-resolve
+- IP-CIDR,172.16.0.0/12,回家开关,no-resolve
+- IP-CIDR,192.168.0.0/16,回家开关,no-resolve
 - IP-CIDR,127.0.0.0/8,直连,no-resolve
 # 回家节点防回环：属于手机版功能硬依赖，不是自有规则扩展
 - DOMAIN-SUFFIX,l-home.top,直连
