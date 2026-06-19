@@ -65,16 +65,19 @@ def check_duplicate_providers(config, errors):
         errors.append(f"重复规则集名称: {d}")
 
 
-def check_group_order(config, errors):
-    """检查 4: 策略组引用顺序（被引用的组必须先定义）"""
+def check_group_order(config, warnings):
+    """检查 4: 策略组引用顺序警告（被引用的组建议先定义，方便阅读）
+    注意：Mihomo 内核本身不要求定义顺序，会自动解析所有依赖。
+    本检查仅为提高配置文件可读性的警告，不阻止发布。
+    """
     groups = config.get('proxy-groups', [])
     group_names = [g['name'] for g in groups]
     for i, g in enumerate(groups):
         for ref in g.get('proxies', []):
-            if ref in ['直连', '拒绝', 'DIRECT', 'REJECT']:
+            if ref in ['直连', '拒绝', 'DIRECT', 'REJECT', '住宅-socks5', '回家']:
                 continue
             if ref in group_names and group_names.index(ref) > i:
-                errors.append(f"策略组顺序错误: '{g['name']}' 引用 '{ref}'，但 '{ref}' 定义在后面")
+                warnings.append(f"策略组顺序建议: '{g['name']}' 引用 '{ref}'，但 '{ref}' 定义在后面（不影响功能，仅可读性）")
 
 
 def check_group_refs(config, errors):
@@ -365,7 +368,6 @@ def validate_config(filename, skip_url_check=False, url_timeout=5, raw_text=""):
     checks = [
         ("必需字段", check_required_fields),
         ("重复规则集", check_duplicate_providers),
-        ("策略组引用顺序", check_group_order),
         ("策略组引用有效性", check_group_refs),
         ("规则集命名格式", check_provider_naming),
         ("锚点格式一致性", check_anchor_format),
@@ -378,6 +380,7 @@ def validate_config(filename, skip_url_check=False, url_timeout=5, raw_text=""):
     ]
 
     warnings_checks = [
+        ("策略组引用顺序", check_group_order),
         ["YAML 重复键警告", lambda c, e: check_duplicate_yaml_keys(raw_text, warnings)],
     ]
 
