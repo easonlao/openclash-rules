@@ -19,12 +19,13 @@ from urllib.parse import urlparse
 
 
 def load_config(filename):
-    """加载并解析 YAML 配置文件"""
+    """加载并解析 YAML 配置文件，同时返回原始文本用于重复键检查"""
     try:
         with open(filename, 'r') as f:
-            return yaml.safe_load(f), None
+            raw_text = f.read()
+        return yaml.safe_load(raw_text), None, raw_text
     except yaml.YAMLError as e:
-        return None, str(e)
+        return None, str(e), ""
 
 
 def extract_rule_refs(rules):
@@ -165,6 +166,160 @@ def check_dangling_refs(config, errors):
         errors.append(f"悬空引用: rules 引用了 '{name}' 但 rule-providers 中未定义")
 
 
+def check_sensitive_fields(config, errors, raw_text=""):
+    """检查 11: 敏感字段不得使用真实值，必须是占位符"""
+    # 检查常见真实凭据模式
+    sensitive_patterns = [
+        (r'password:\s*["\']?[A-Za-z0-9]{8,}["\']?', '密码看起来像真实值，应使用占位符"你的密码"'),
+        (r'server:\s*["\']?\d+\.\d+\.\d+\.\d+["\']?', 'IP 看起来像真实值，应使用占位符"你的住宅IP地址"'),
+        (r'url:\s*["\']?http://10\.10\.10\.\d+[^"\']*["\']?', '使用了内网订阅 URL，应使用占位符'),
+    ]
+
+    if raw_text:
+        for pattern, desc in sensitive_patterns:
+            if re.search(pattern, raw_text):
+                errors.append(f"敏感字段: {desc}")
+
+    # 结构化检查：proxies 中的住宅节点
+    for p in config.get('proxies', []):
+        if isinstance(p, dict):
+            name = p.get('name', '')
+            server = str(p.get('server', ''))
+            username = str(p.get('username', ''))
+            password = str(p.get('password', ''))
+
+            # 住宅节点必须使用占位符
+            if '住宅' in name or 'residential' in name.lower():
+                if '你的' not in server and server not in ('socks.l-home.top',):
+                    errors.append(f"敏感字段: 住宅节点 server='{server}' 应使用占位符")
+                if username and '你的' not in username:
+                    errors.append("敏感字段: 住宅节点 username 应使用占位符")
+                if '你的' not in password and len(password) > 6:
+                    errors.append(f"敏感字段: 住宅节点 password 应使用占位符")
+
+            # 回家节点必须使用占位符
+            if 'home' in name.lower() or '回家' in name:
+                if '你的' not in password and len(password) > 6:
+                    errors.append(f"敏感字段: 回家节点 password 应使用占位符")
+
+    # proxy-providers 订阅 URL
+    for name, prov in config.get('proxy-providers', {}).items():
+        if isinstance(prov, dict) and 'url' in prov:
+            url = str(prov['url'])
+            if '你的' not in url and 'example.com' not in url:
+                if '10.10.10.' in url:
+                    errors.append(f"敏感字段: proxy-provider '{name}' URL 应使用占位符")
+
+
+def check_unique_match(config, errors):
+    """检查 12: MATCH 规则必须唯一且在最后"""
+    rules = config.get('rules', [])
+    match_rules = [i for i, r in enumerate(rules) if isinstance(r, str) and r.startswith('MATCH,')]
+
+    if len(match_rules) == 0:
+        errors.append("规则检查: 缺少 MATCH 兜底规则")
+    elif len(match_rules) > 1:
+        errors.append(f"规则检查: 存在 {len(match_rules)} 个 MATCH 规则，必须唯一")
+    elif match_rules[0] != len(rules) - 1:
+        errors.append(f"规则检查: MATCH 规则在位置 {match_rules[0]}，必须是最后一条")
+
+
+def check_policy_cycles(config, errors):
+    """检查 13: 策略组引用循环（如 A→B→C→A）"""
+    groups = config.get('proxy-groups', [])
+    name_to_idx = {g['name']: i for i, g in enumerate(groups)}
+    visited = set()
+
+    def dfs(name, path):
+        if name in path:
+            cycle_start = path.index(name)
+            cycle = " → ".join(path[cycle_start:] + [name])
+            errors.append(f"策略循环: {cycle}")
+            return
+        if name in visited or name not in name_to_idx:
+            return
+        visited.add(name)
+        path.append(name)
+        idx = name_to_idx[name]
+        for ref in groups[idx].get('proxies', []):
+            if ref in name_to_idx:  # 只检查策略组，跳过真实代理和直连/拒绝
+                dfs(ref, path)
+        path.pop()
+
+    for g in groups:
+        if g['name'] not in visited:
+            dfs(g['name'], [])
+
+
+def check_duplicate_yaml_keys(raw_text, errors):
+    """检查 14: 同一个 YAML mapping 内的重复键。"""
+    duplicates = []
+
+    class DuplicateKeyLoader(yaml.SafeLoader):
+        pass
+
+    def construct_mapping(loader, node, deep=False):
+        seen = {}
+        for key_node, _ in node.value:
+            if not isinstance(key_node, yaml.ScalarNode) or key_node.value == '<<':
+                continue
+            key = key_node.value
+            line = key_node.start_mark.line + 1
+            if key in seen:
+                duplicates.append((key, seen[key], line))
+            else:
+                seen[key] = line
+        return yaml.SafeLoader.construct_mapping(loader, node, deep=deep)
+
+    DuplicateKeyLoader.add_constructor(
+        yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,
+        construct_mapping,
+    )
+
+    try:
+        yaml.load(raw_text, Loader=DuplicateKeyLoader)
+    except yaml.YAMLError:
+        return  # YAML syntax errors are reported by load_config.
+
+    for key, first_line, duplicate_line in duplicates:
+        errors.append(
+            f"YAML 重复键: 第 {first_line} 行和第 {duplicate_line} 行都定义了 '{key}'"
+        )
+
+
+def check_cross_config_consistency(config1, config2, errors, name1="config1", name2="config2"):
+    """检查 15: 跨配置语义一致性（手机版和家用版除了回家开关必须一致）
+
+    手机版与家用版唯一允许的差异：
+    1. 多一个 'Home' 代理节点
+    2. 多一个 '回家开关' 策略组
+    3. 所有策略组的第一个选项包含 '回家开关'
+    """
+    # 检查 rule-providers 必须完全一致
+    rp1 = set(config1.get('rule-providers', {}).keys())
+    rp2 = set(config2.get('rule-providers', {}).keys())
+    if rp1 != rp2:
+        only1 = sorted(rp1 - rp2)
+        only2 = sorted(rp2 - rp1)
+        if only1:
+            errors.append(f"跨配置不一致: {name1} 独有的规则集: {', '.join(only1)}")
+        if only2:
+            errors.append(f"跨配置不一致: {name2} 独有的规则集: {', '.join(only2)}")
+
+    # 检查策略组数量：手机版应该比家用版多 1 个（回家开关）
+    groups1 = [g['name'] for g in config1.get('proxy-groups', [])]
+    groups2 = [g['name'] for g in config2.get('proxy-groups', [])]
+
+    # 除了回家开关，其他策略组名称必须一致
+    g1_set = set(groups1)
+    g2_set = set(groups2)
+    diff = g1_set.symmetric_difference(g2_set)
+    allowed_diff = {'回家开关'}
+    if diff - allowed_diff:
+        unexpected = sorted(diff - allowed_diff)
+        errors.append(f"跨配置不一致: 不允许的策略组差异: {', '.join(unexpected)}")
+
+
 def check_url_accessibility(config, warnings, timeout=5):
     """检查 11: URL 可访问性（仅警告，不阻断）"""
     providers = config.get('rule-providers', {})
@@ -191,7 +346,7 @@ def check_trailing_whitespace(config, warnings):
     pass
 
 
-def validate_config(filename, skip_url_check=False, url_timeout=5):
+def validate_config(filename, skip_url_check=False, url_timeout=5, raw_text=""):
     """运行所有验证检查"""
     print("=" * 60)
     print(f"验证配置文件: {filename}")
@@ -201,10 +356,10 @@ def validate_config(filename, skip_url_check=False, url_timeout=5):
     warnings = []
 
     # 加载配置
-    config, parse_err = load_config(filename)
+    config, parse_err, raw_text = load_config(filename)
     if not check_yaml_syntax(config, errors):
         print(f"\n❌ YAML 语法错误:\n  {parse_err}")
-        return errors, warnings
+        return errors, warnings, config, raw_text
 
     # 运行所有检查
     checks = [
@@ -217,16 +372,33 @@ def validate_config(filename, skip_url_check=False, url_timeout=5):
         ("名称/行为匹配", check_anchor_mismatch),
         ("孤立规则集", check_unreferenced_providers),
         ("悬空引用", check_dangling_refs),
+        ("敏感字段占位符", lambda c, e: check_sensitive_fields(c, e, raw_text)),
+        ["唯一 MATCH 规则", check_unique_match],
+        ["策略循环检查", check_policy_cycles],
+    ]
+
+    warnings_checks = [
+        ["YAML 重复键警告", lambda c, e: check_duplicate_yaml_keys(raw_text, warnings)],
     ]
 
     for i, (desc, fn) in enumerate(checks, 1):
         before = len(errors)
-        print(f"\n[{i}/{len(checks) + (1 if not skip_url_check else 0)}] {desc}...", end=" ")
+        print(f"\n[{i}/{len(checks) + len(warnings_checks) + (0 if skip_url_check else 1)}] {desc}...", end=" ")
         fn(config, errors)
         if len(errors) == before:
             print("✅")
         else:
             print(f"❌ +{len(errors) - before}")
+
+    for i, (desc, fn) in enumerate(warnings_checks, 1):
+        idx = i + len(checks)
+        print(f"\n[{idx}/{len(checks) + len(warnings_checks) + (0 if skip_url_check else 1)}] {desc}...", end=" ")
+        before = len(warnings)
+        fn(config, warnings)
+        if len(warnings) == before:
+            print("✅")
+        else:
+            print(f"⚠️  +{len(warnings) - before}")
 
     # URL 检查（可选，较慢）
     if not skip_url_check:
@@ -252,7 +424,7 @@ def validate_config(filename, skip_url_check=False, url_timeout=5):
         for i, w in enumerate(warnings, 1):
             print(f"  {i}. {w}")
 
-    return errors, warnings
+    return errors, warnings, config, raw_text
 
 
 def main():
@@ -265,13 +437,32 @@ def main():
 
     all_errors = []
     all_warnings = []
+    configs = {}
 
     for filename in args.files:
-        errors, warnings = validate_config(filename, skip_url_check=args.skip_url,
-                                           url_timeout=args.url_timeout)
+        errors, warnings, config, raw_text = validate_config(filename, skip_url_check=args.skip_url,
+                                                             url_timeout=args.url_timeout)
         all_errors.extend(errors)
         all_warnings.extend(warnings)
+        configs[filename] = config
         print()
+
+    # 跨配置一致性检查（如果有两个配置文件）
+    if len(configs) >= 2 and 'config_local.yaml' in configs and 'config_mobile.yaml' in configs:
+        print("=" * 60)
+        print("[14/14] 跨配置一致性检查...", end=" ")
+        cross_errors = []
+        check_cross_config_consistency(
+            configs['config_local.yaml'], configs['config_mobile.yaml'],
+            cross_errors, "家用版", "手机版"
+        )
+        if not cross_errors:
+            print("✅")
+        else:
+            print(f"❌ +{len(cross_errors)}")
+            for e in cross_errors:
+                print(f"  - {e}")
+        all_errors.extend(cross_errors)
 
     # 最终结论
     if len(args.files) > 1:

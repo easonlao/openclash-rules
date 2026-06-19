@@ -44,15 +44,15 @@ proxies:
   server: socks.l-home.top
   port: 12320
   cipher: aes-256-gcm
-  password: Yx880721           # iStoreOS PassWall Server
+  password: "你的SS密码"           # iStoreOS PassWall Server
 
 # 住宅IP（与家用配置一致，经住宅中继组连接）
 - name: 住宅-socks5
   type: socks5
-  server: 154.44.87.101
-  port: 9004
-  username: cpgp1vg4
-  password: AioxAY0oDQPC
+  server: "你的住宅IP地址"
+  port: 12345
+  username: "你的用户名"
+  password: "你的密码"
   udp: true
   skip-cert-verify: true
   dialer-proxy: 住宅中继组
@@ -324,18 +324,6 @@ proxy-groups:
 - name: 苹果
   <<: *default
 
-- name: 英伟达
-  <<: *default
-
-- name: 游戏
-  <<: *default
-
-- name: 加密货币
-  <<: *default
-
-- name: 测试
-  <<: *default
-
 - name: 国外
   <<: *default
 
@@ -359,8 +347,7 @@ rule-anchor:
   class: &class {type: http, interval: 86400, behavior: classical, format: text}
 
 rule-providers:
-  # 广告拦截
-  BanAD / Domain: {<<: *class, url: "https://gh-proxy.com/raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Providers/BanAD.yaml"}
+  # 广告拦截（已移至 Layer 3 可选扩展）
 
   # AI 服务
   ChatGPT / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/openai.mrs"}
@@ -371,22 +358,16 @@ rule-providers:
   Microsoft / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/microsoft.mrs"}
   Apple / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/apple.mrs"}
   Apple-CN / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/apple-cn.mrs"}
-  Nvidia / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/nvidia.mrs"}
-  # 加密货币
-  Crypto / Domain: {<<: *class, url: "https://gh-proxy.com/raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Cryptocurrency/Cryptocurrency.list"}
+  # 加密货币（已移至 Layer 3 可选扩展）
   # 流媒体
   Netflix / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/netflix.mrs"}
   Disney / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/disney.mrs"}
   Spotify / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/spotify.mrs"}
   TikTok / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/tiktok.mrs"}
   HBO / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/hbo.mrs"}
-  # 游戏平台
-  Steam / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/steam.mrs"}
-  Epic / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/epicgames.mrs"}
-  Blizzard / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/blizzard.mrs"}
-  EA / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/ea.mrs"}
+  # 游戏平台（已移至 Layer 3 可选扩展）
   # 测试/兜底
-  Test / Domain: {<<: *class, url: "https://gh-proxy.com/raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/ChinaTest/ChinaTest.list"}
+
   # 国内/国外分流
   Proxy / Domain: {<<: *class, url: "https://gh-proxy.com/raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Proxy/Proxy.list"}
   Direct / Domain: {<<: *class, url: "https://gh-proxy.com/raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Direct/Direct.list"}
@@ -395,7 +376,7 @@ rule-providers:
   # 科技公司补充
   GitHub / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/github.mrs"}
   Google / IP: {<<: *ip, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geoip/google.mrs"}
-  Amazon / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/amazon.mrs"}
+
   Globe / Domain: {<<: *class, url: "https://gh-proxy.com/raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Global/Global.list"}
   # AI 服务补充
   Meta AI / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/meta.mrs"}
@@ -404,31 +385,23 @@ rule-providers:
   # 流媒体补充
   Netflix / IP: {<<: *ip, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geoip/netflix.mrs"}
   Reddit / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/reddit.mrs"}
-  # 游戏平台补充
-  Nintend / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/nintendo.mrs"}
-  PlayStation / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/playstation.mrs"}
-  UBI / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/ubisoft.mrs"}
+  # 游戏平台补充（已移至 Layer 3 可选扩展）
   # 加密货币补充
-  Binance / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/binance.mrs"}
-  Bybit / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/bybit.mrs"}
-  OKX / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/okx.mrs"}
-  # 广告拦截补充
-  Adobe / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/adobe.mrs"}
-  AdobeActivation / Domain: {<<: *class, url: "https://gh-proxy.com/raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/AdobeActivation/AdobeActivation.list"}
+  # 加密货币（已移至 Layer 3 可选扩展）
+  # 广告拦截补充（已移至 Layer 3 可选扩展）
   # 国内补充
   China / IP: {<<: *ip, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geoip/cn.mrs"}
 
 # ──────────────── 分流规则 ────────────────
 rules:
-# 广告拦截（最高优先级）
-- RULE-SET,BanAD / Domain,拒绝
-# 自用直连（内联，避免私有 GitHub raw 规则无法加载）
+# 广告拦截（已移至 Layer 3 可选扩展）
+# 基础私网直连（Layer 2 基础网络规则）
 - IP-CIDR,10.0.0.0/8,直连,no-resolve
 - IP-CIDR,172.16.0.0/12,直连,no-resolve
 - IP-CIDR,192.168.0.0/16,直连,no-resolve
 - IP-CIDR,127.0.0.0/8,直连,no-resolve
+# 回家节点防回环：属于手机版功能硬依赖，不是自有规则扩展
 - DOMAIN-SUFFIX,l-home.top,直连
-- DOMAIN,easonlao.ip-ddns.com,直连
 # AI 服务
 - RULE-SET,ChatGPT / Domain,人工智能
 - RULE-SET,Claude / Domain,人工智能
@@ -442,15 +415,12 @@ rules:
 - RULE-SET,Microsoft / Domain,微软
 - RULE-SET,Apple / Domain,苹果
 - RULE-SET,Apple-CN / Domain,苹果
-- RULE-SET,Nvidia / Domain,英伟达
+
 - RULE-SET,GitHub / Domain,国外
-- RULE-SET,Amazon / Domain,国外
+
 - RULE-SET,Globe / Domain,国外
-# 加密货币
-- RULE-SET,Crypto / Domain,加密货币
-- RULE-SET,Binance / Domain,加密货币
-- RULE-SET,Bybit / Domain,加密货币
-- RULE-SET,OKX / Domain,加密货币
+# 加密货币（已移至 Layer 3 可选扩展）
+
 # 流媒体
 - RULE-SET,TikTok / Domain,流媒体
 - RULE-SET,Netflix / Domain,流媒体
@@ -459,19 +429,10 @@ rules:
 - RULE-SET,HBO / Domain,流媒体
 - RULE-SET,Spotify / Domain,流媒体
 - RULE-SET,Reddit / Domain,国外
-# 游戏平台
-- RULE-SET,Steam / Domain,游戏
-- RULE-SET,Epic / Domain,游戏
-- RULE-SET,EA / Domain,游戏
-- RULE-SET,Blizzard / Domain,游戏
-- RULE-SET,Nintend / Domain,游戏
-- RULE-SET,PlayStation / Domain,游戏
-- RULE-SET,UBI / Domain,游戏
-# 测试
-- RULE-SET,Test / Domain,测试
-# 广告拦截补充
-- RULE-SET,Adobe / Domain,拒绝
-- RULE-SET,AdobeActivation / Domain,拒绝
+# 游戏平台（已移至 Layer 3 可选扩展）
+
+# 测试（已移至 Layer 3 可选扩展）
+# 广告拦截补充（已移至 Layer 3 可选扩展）
 # 国外代理规则
 - RULE-SET,Proxy / Domain,国外
 # 国内直连规则
