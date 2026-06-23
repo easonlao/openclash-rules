@@ -164,6 +164,31 @@ python3 validate_config.py
 
 **验证失败不能发布！**
 
+### 隔离验证主路由候选配置
+
+当配置会影响当前在线网络时，不要直接在主路由上试错。当前项目已经有一套隔离验证路径：它会读取项目根目录的 `PRIVATE-CONNECTION-INFO.md`，拉取路由器当前 Mihomo 二进制与已缓存的 provider 文件，在本机 `Ubuntu WSL` 中启动一个只监听 `127.0.0.1` 的临时运行时，再自动验证控制面、策略组切换和真实出站。
+
+前置条件：
+
+1. Windows 已安装并可运行 `WSL`
+2. 可从当前机器 SSH 到 OpenClash 路由器
+3. 已设置路由器密码环境变量 `OC_ROUTER_PASSWORD`
+
+命令（在 `E:\SynologyDrive\OrbitOS` 根目录执行）：
+
+```bash
+python .orbitos/tmp/validate_openclash_isolated_runtime.py --profile local
+python .orbitos/tmp/validate_openclash_isolated_runtime.py --profile mobile
+```
+
+成功条件：
+
+1. 同版本 Mihomo 能正常启动并加载 provider
+2. 至少有一个 `所有-手动` 候选节点能通过 `http://neverssl.com` 与 `https://www.gstatic.com/generate_204`
+3. `https://ip.net.coffee/` 通过混合代理访问成功
+
+这一步只证明“候选配置在隔离环境可工作”。主路由上线前，仍应再用 Net.Coffee 的 IP / DNS / WebRTC 页面复验运行时结果。
+
 ---
 
 ## 更新日志

@@ -12,21 +12,28 @@ bind-address: 127.0.0.1
 mode: rule
 log-level: info
 ipv6: true
+external-controller: 127.0.0.1:9090
 
 # ──────────────── DNS ────────────────
 dns:
   enable: true
   ipv6: true
+  respect-rules: true
   proxy-server-nameserver:
-  - https://doh.pub/dns-query
+  - https://1.1.1.1/dns-query
+  - https://dns.google/dns-query
   default-nameserver:
-  - 223.5.5.5
-  - 119.29.29.29
+  - 1.1.1.1
+  - 8.8.8.8
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
   nameserver:
-  - https://dns.alidns.com/dns-query
-  - https://doh.pub/dns-query
+  - https://1.1.1.1/dns-query
+  - https://dns.google/dns-query
+  direct-nameserver:
+  - https://1.1.1.1/dns-query
+  - https://dns.google/dns-query
+  direct-nameserver-follow-policy: true
   fallback:
   - https://1.1.1.1/dns-query
   - https://8.8.8.8/dns-query
@@ -346,9 +353,11 @@ rule-providers:
   # 广告拦截（已移至 Layer 3 可选扩展）
 
   # AI 服务
-  ChatGPT / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/openai.mrs"}
+  ChatGPT / Domain: {<<: *class, url: "https://gh-proxy.com/raw.githubusercontent.com/easonlao/openclash-rules/refs/heads/master/list/ChatGPT.list"}
   Claude / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/anthropic.mrs"}
   Groq / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/groq.mrs"}
+  Copilot / Domain: {<<: *class, url: "https://gh-proxy.com/raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Copilot/Copilot.list"}
+  Gemini / Domain: {<<: *class, url: "https://gh-proxy.com/raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Gemini/Gemini.list"}
   # 科技公司
   Google / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/google.mrs"}
   Microsoft / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/microsoft.mrs"}
@@ -374,13 +383,14 @@ rule-providers:
   Google / IP: {<<: *ip, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geoip/google.mrs"}
 
   Globe / Domain: {<<: *class, url: "https://gh-proxy.com/raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Global/Global.list"}
+  Telegram / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/telegram.mrs"}
+  Telegram / IP: {<<: *ip, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geoip/telegram.mrs"}
   # AI 服务补充
   Meta AI / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/meta.mrs"}
   Perplexity / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/perplexity.mrs"}
   Grok / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/x.mrs"}
   # 流媒体补充
   Netflix / IP: {<<: *ip, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geoip/netflix.mrs"}
-  Reddit / Domain: {<<: *domain, url: "https://gh-proxy.com/github.com/metacubex/meta-rules-dat/raw/refs/heads/meta/geo/geosite/reddit.mrs"}
   # 游戏平台补充（已移至 Layer 3 可选扩展）
   # 加密货币补充
   # 加密货币（已移至 Layer 3 可选扩展）
@@ -398,9 +408,17 @@ rules:
 - IP-CIDR,127.0.0.0/8,直连,no-resolve
 # 回家节点防回环：属于手机版功能硬依赖，不是自有规则扩展
 - DOMAIN-SUFFIX,l-home.top,直连
+# WebRTC 真实 IP 防护（Layer 2 基础网络规则）
+- DOMAIN-SUFFIX,stun.l.google.com,拒绝
+- DOMAIN-SUFFIX,stun.cloudflare.com,拒绝
+- DOMAIN-KEYWORD,stun,拒绝
+- DOMAIN-KEYWORD,turn,拒绝
+- DOMAIN-KEYWORD,rtc,拒绝
 # AI 服务
 - RULE-SET,ChatGPT / Domain,人工智能
 - RULE-SET,Claude / Domain,人工智能
+- RULE-SET,Copilot / Domain,人工智能
+- RULE-SET,Gemini / Domain,人工智能
 - RULE-SET,Groq / Domain,人工智能
 - RULE-SET,Meta AI / Domain,人工智能
 - RULE-SET,Perplexity / Domain,人工智能
@@ -414,6 +432,8 @@ rules:
 
 - RULE-SET,GitHub / Domain,国外
 
+- RULE-SET,Telegram / Domain,国外
+- RULE-SET,Telegram / IP,国外,no-resolve
 - RULE-SET,Globe / Domain,国外
 # 加密货币（已移至 Layer 3 可选扩展）
 
@@ -424,7 +444,6 @@ rules:
 - RULE-SET,Disney / Domain,流媒体
 - RULE-SET,HBO / Domain,流媒体
 - RULE-SET,Spotify / Domain,流媒体
-- RULE-SET,Reddit / Domain,国外
 # 游戏平台（已移至 Layer 3 可选扩展）
 
 # 测试（已移至 Layer 3 可选扩展）

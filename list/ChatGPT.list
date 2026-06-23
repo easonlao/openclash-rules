@@ -1,0 +1,39 @@
+# NAME: ChatGPT
+# AUTHOR: Net.Coffee + easonlao
+# SOURCE: https://ip.net.coffee/gpt/site.html
+# UPDATED: 2026-06-23
+# PURPOSE: ChatGPT / Codex full routing rules, including OpenAI core domains, CDN/backends, Arkose verification, LiveKit voice, and OpenAI telemetry.
+# DOMAIN: 8
+# DOMAIN-SUFFIX: 13
+# TOTAL: 21
+
+# OpenAI 核心域名
+DOMAIN-SUFFIX,openai.com
+DOMAIN-SUFFIX,chatgpt.com
+DOMAIN-SUFFIX,chat.com
+DOMAIN-SUFFIX,sora.com
+DOMAIN-SUFFIX,oaistatic.com
+DOMAIN-SUFFIX,oaiusercontent.com
+DOMAIN-SUFFIX,crixet.com
+
+# CDN 与后端（Cloudflare + Azure）
+DOMAIN,openai.com.cdn.cloudflare.net
+DOMAIN,openaicom.imgix.net
+DOMAIN,openaiapi-site.azureedge.net
+DOMAIN,production-openaicom-storage.azureedge.net
+DOMAIN,openaicomproductionae4b.blob.core.windows.net
+DOMAIN,openaicom-api-bdcpf8c6d2e9atf6.z01.azurefd.net
+DOMAIN-SUFFIX,webpubsub.azure.com
+
+# 人机验证（Arkose / OpenAI 专用）
+DOMAIN-SUFFIX,client-api.arkoselabs.com
+DOMAIN,openai-api.arkoselabs.com
+
+# 语音模式（LiveKit / WebRTC / TURN）
+DOMAIN-SUFFIX,chatgpt.livekit.cloud
+DOMAIN-SUFFIX,host.livekit.cloud
+DOMAIN-SUFFIX,turn.livekit.cloud
+
+# OpenAI 专用遥测
+DOMAIN,o33249.ingest.sentry.io
+DOMAIN,browser-intake-datadoghq.com

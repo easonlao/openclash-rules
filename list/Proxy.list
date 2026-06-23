@@ -144,205 +144,41 @@ IP-CIDR,46.3.240.0/24,no-resolve
 IP-CIDR,45.87.172.0/24,no-resolve 
 
 
-DOMAIN-SUFFIX,clash-cn.com
-
-DOMAIN-SUFFIX,luminati.io
-DOMAIN-SUFFIX,mifjun.com
-DOMAIN-SUFFIX,nbr.co.nz
-
-DOMAIN-SUFFIX,iill.top
-
-# AI
-# DOMAIN,ai.opendoor.cn
-
 # capcut
 DOMAIN-SUFFIX,capcut.com
-
-# 小牛
-# DOMAIN-SUFFIX,xiaoniuyun.cc
-
-DOMAIN-SUFFIX,fastlydns.net
-DOMAIN-SUFFIX,bncrcloud.com
-# ssrdog
-DOMAIN-SUFFIX,ssrdog222.com
-DOMAIN-SUFFIX,hosbbq.com
-DOMAIN-SUFFIX,ssrdog7.com
-DOMAIN-SUFFIX,ssrdog8.com
-DOMAIN-SUFFIX,ssrdog9.com
-DOMAIN-SUFFIX,ssrdog.com
-
 
 # 国外DNS
 DOMAIN-SUFFIX,dns.google
 DOMAIN-SUFFIX,1dot1dot1dot1.cloudflare-dns.com
-DOMAIN-SUFFIX,dot.sb
 DOMAIN-SUFFIX,dns.umbrella.com
 DOMAIN-SUFFIX,dns.quad9.net
 DOMAIN-SUFFIX,dns.google
-DOMAIN-SUFFIX,cloudflare-dns.com
 DOMAIN-SUFFIX,doh.dns.sb
 DOMAIN-SUFFIX,doh.opendns.com
 DOMAIN-SUFFIX,dns.quad9.net
 DOMAIN-SUFFIX,hk-hkg.doh.sb
 
 # 其他网站
-DOMAIN-SUFFIX,googleapis.com
 DOMAIN-SUFFIX,googleapis.cn
-DOMAIN-SUFFIX,gstatic.com
-DOMAIN-SUFFIX,signalr.net
-DOMAIN-SUFFIX,tiny-vps.com
-DOMAIN-SUFFIX,zemoj.com
-DOMAIN-SUFFIX,code2chicken.nl
-DOMAIN-SUFFIX,rarbg.to
-DOMAIN-SUFFIX,gbitt.info
-DOMAIN-SUFFIX,publictracker.xyz
-DOMAIN-SUFFIX,tace.ru
-DOMAIN-SUFFIX,uifr.ru
-DOMAIN-SUFFIX,nanoha.org
-DOMAIN-SUFFIX,darmowy-torrent.pl
-DOMAIN-SUFFIX,hama3.net
-DOMAIN-SUFFIX,mercax.com
-DOMAIN-SUFFIX,itzmx.com
-DOMAIN-SUFFIX,iriseden.eu
-DOMAIN-SUFFIX,shittyurl.org
-DOMAIN-SUFFIX,i2p.rocks
-DOMAIN-SUFFIX,shittyurl.org
-DOMAIN-SUFFIX,filetracker.xyz
-DOMAIN-SUFFIX,altrosky.nl
-DOMAIN-SUFFIX,leech.ie
 
-DOMAIN-SUFFIX,svcloud.one
-
-DOMAIN-SUFFIX,v1.mk
-
-DOMAIN-SUFFIX,eohut.com
-
-DOMAIN-SUFFIX,ednovas.tech
-
-
-
-# 小牛机场
-DOMAIN-SUFFIX,vns735p8.xyz
-DOMAIN-SUFFIX,i4z65c0h.xyz
-DOMAIN-SUFFIX,v140oy1s.xyz
-DOMAIN-SUFFIX,tcb54710.xyz
-
-DOMAIN-SUFFIX,polymarket.com
-DOMAIN-SUFFIX,cacapex.com
-DOMAIN-SUFFIX,1lib.sk
-DOMAIN-SUFFIX,6bcloud.top
-DOMAIN-SUFFIX,viptwo.top
 DOMAIN-SUFFIX,followme.com
 DOMAIN-SUFFIX,followme.ceo
-DOMAIN-SUFFIX,whatsmydns.me
 DOMAIN-SUFFIX,hostloc.net
 DOMAIN-SUFFIX,tmgm.com
-DOMAIN-SUFFIX,plexapp.com
 DOMAIN-SUFFIX,plexmediaserver.com
-DOMAIN-SUFFIX,plex.tv
-DOMAIN-SUFFIX,ip111.cn
-DOMAIN-SUFFIX,ipinfo.io
-DOMAIN-SUFFIX,ip-score.com
-DOMAIN-SUFFIX,dnsleaktest.com
-DOMAIN-SUFFIX,asiassn.com
-DOMAIN-SUFFIX,ipleak.net
-DOMAIN-SUFFIX,browserleaks.com
-DOMAIN-SUFFIX,browserleaks.org
-DOMAIN-SUFFIX,browserleaks.net
 DOMAIN-SUFFIX,surfsharkdns.com
-DOMAIN-SUFFIX,llgjc1.com
-DOMAIN-SUFFIX,qichiyu.com
-# DOMAIN-SUFFIX,groq.com
-# DOMAIN-SUFFIX,difyai.com
-DOMAIN-SUFFIX,hsy88.org
-DOMAIN-SUFFIX,xn--mes358acgm99l.com
-DOMAIN-SUFFIX,dnsleaktest.org
-DOMAIN-SUFFIX,nmnm.fun
 
-DOMAIN-SUFFIX,extrabux.com
-DOMAIN-SUFFIX,wallvpn.com
-DOMAIN-SUFFIX,pig.ws
-DOMAIN-SUFFIX,ldmnq.com
-
-DOMAIN-SUFFIX,lightningxvpn.com
-
-DOMAIN-SUFFIX,stotik.com
 DOMAIN-SUFFIX,streetfighter.com
 DOMAIN-SUFFIX,capcom.com
-DOMAIN-SUFFIX,fcdn.sk
-DOMAIN-SUFFIX,kooink.com
-DOMAIN-SUFFIX,nodeseek.com
 DOMAIN-SUFFIX,socialchain.app
 DOMAIN-SUFFIX,onesignal.com
-DOMAIN-SUFFIX,coinglass.com
 
 DOMAIN-SUFFIX,fiverr.com
-DOMAIN-SUFFIX,ebay.com
 
 
-DOMAIN-SUFFIX,kjfx.cc
 
-DOMAIN-SUFFIX,hlive.io
-DOMAIN-SUFFIX,ndmdhs.com
-DOMAIN-SUFFIX,anygate.vip
-DOMAIN-SUFFIX,yfsp.tv
-DOMAIN-SUFFIX,bitwayeat.com
-DOMAIN-SUFFIX,etcbbi.xyz
-DOMAIN-SUFFIX,etcbbf.xyz
-DOMAIN-SUFFIX,etcbbj.xyz
-DOMAIN-SUFFIX,etcbbi.xyz
-DOMAIN-SUFFIX,etcbbh.xyz
-DOMAIN-SUFFIX,etcbbf.xyz
-DOMAIN-SUFFIX,etcbbg.xyz
-DOMAIN-SUFFIX,bugsnag.com
-DOMAIN-SUFFIX,pipecdn.vip
-DOMAIN-SUFFIX,wyav.tv
-DOMAIN-SUFFIX,tfboyaac.com
-DOMAIN-SUFFIX,tfboyaab.com
-DOMAIN-SUFFIX,aiyifan.tv
-DOMAIN-SUFFIX,tfboyaaa.com
-
-DOMAIN-SUFFIX,canva.com
-
-DOMAIN-SUFFIX,waytogone.com
-DOMAIN-SUFFIX,timeprecei.com
-DOMAIN-SUFFIX,etcbbb.xyz
-DOMAIN-SUFFIX,tfbgbbb.com
-DOMAIN-SUFFIX,tfbgaaa.com
-DOMAIN-SUFFIX,etcbba.xyz
-DOMAIN-SUFFIX,tfboyaae.com
-DOMAIN-SUFFIX,tfboyaad.com
-
-DOMAIN-SUFFIX,polivera.ai
-DOMAIN-SUFFIX,asiassn.com
-DOMAIN-SUFFIX,mmcks.top
-DOMAIN-SUFFIX,needay.xyz
-DOMAIN-SUFFIX,mzzxuh.com
-DOMAIN-SUFFIX,lianjiasub.work
-DOMAIN-SUFFIX,muniucloud.pro
-DOMAIN-SUFFIX,kuajing.uk
-DOMAIN-SUFFIX,metacubex.one
-DOMAIN-SUFFIX,xiaoxintv.cc
-DOMAIN-SUFFIX,69yun.top
-DOMAIN-SUFFIX,nivodi.com
 DOMAIN-SUFFIX,steamcommunity.com
-# DOMAIN-SUFFIX,steampowered.com
-DOMAIN-SUFFIX,abcproxy.com
-DOMAIN-SUFFIX,piliapp.com
-DOMAIN-SUFFIX,meijutt.cc
-DOMAIN-SUFFIX,piaohua.com
 DOMAIN-SUFFIX,ip-api.com
-DOMAIN-SUFFIX,browserscan.net
-DOMAIN-SUFFIX,ipify.org
-DOMAIN-SUFFIX,dnscheck.tools
-DOMAIN-SUFFIX,arin.net
-DOMAIN-SUFFIX,null-addr.com
-DOMAIN-SUFFIX,null-addr.net
-DOMAIN-SUFFIX,null-addr.org
-DOMAIN-SUFFIX,null-addr.biz
-DOMAIN-SUFFIX,null-addr.info
-DOMAIN-SUFFIX,addr.tools
-DOMAIN-SUFFIX,bulianglin.com
 DOMAIN-SUFFIX,coincola.com
 DOMAIN-SUFFIX,coincolacdn.com
 DOMAIN-SUFFIX,colaotc.com

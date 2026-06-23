@@ -1,13 +1,7 @@
+# Apple-Custome / Domain 仅承担补充层：
+# 只保留 Apple / Apple-CN 未覆盖，但实际与 Apple Relay / Apple 边缘设施相关的条目。
+
 DOMAIN-KEYWORD,apple-relay
 DOMAIN-SUFFIX,apple-relay.cloudflare.com
-DOMAIN-SUFFIX,apple-relay.apple.com
-
-# Apple Intelligence：
-DOMAIN-SUFFIX,guzzoni.apple.com
-DOMAIN-SUFFIX,smoot.apple.com
 DOMAIN-SUFFIX,apple-relay.fastly-edge.com
 DOMAIN-SUFFIX,cp4.cloudflare.com
-DOMAIN-SUFFIX,gspe1-ssl.ls.apple.com
-DOMAIN-SUFFIX,gateway.icloud.com
-DOMAIN-SUFFIX,apps.mzstatic.com
-DOMAIN-SUFFIX,apple-dns.net

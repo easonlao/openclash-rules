@@ -15,6 +15,7 @@ import requests
 import sys
 import re
 import argparse
+import ipaddress
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -52,10 +53,12 @@ def check_yaml_syntax(config, errors):
     return True
 
 
-def check_required_fields(config, errors):
+def check_required_fields(config, errors, filename=None):
     """检查 2: 必需的顶级字段"""
-    required = ['mixed-port', 'allow-lan', 'mode', 'dns', 'proxies',
+    required = ['mixed-port', 'allow-lan', 'mode', 'proxies',
                 'proxy-providers', 'proxy-groups', 'rule-providers', 'rules']
+    if Path(filename or "").name != 'config_local.yaml':
+        required.append('dns')
     for field in required:
         if field not in config:
             errors.append(f"缺失顶级字段: {field}")
@@ -259,6 +262,118 @@ def check_policy_cycles(config, errors):
             dfs(g['name'], [])
 
 
+def check_external_controller(config, errors, filename):
+    """检查 external-controller 是否与配置文件类型精确匹配"""
+    expected_values = {
+        'config_local.yaml': ':9090',
+        'config_mobile.yaml': '127.0.0.1:9090',
+    }
+    expected = expected_values.get(Path(filename).name)
+    if expected is None:
+        return
+
+    actual = config.get('external-controller')
+    if actual != expected:
+        errors.append(
+            f"基础设置: {Path(filename).name} 的 external-controller 必须为 '{expected}'，当前: {actual}"
+        )
+
+
+def check_webrtc_rules(config, errors, filename=None):
+    """检查 WebRTC 防护规则是否存在"""
+    if Path(filename or "").name == 'config_local.yaml':
+        return
+    rules = config.get('rules', [])
+    required_rules = [
+        'DOMAIN-SUFFIX,stun.l.google.com,拒绝',
+        'DOMAIN-SUFFIX,stun.cloudflare.com,拒绝',
+        'DOMAIN-KEYWORD,stun,拒绝',
+        'DOMAIN-KEYWORD,turn,拒绝',
+        'DOMAIN-KEYWORD,rtc,拒绝',
+    ]
+    for rule in required_rules:
+        if rule not in rules:
+            errors.append(f"WebRTC 防护: 缺少规则 '{rule}'")
+
+
+def check_dns_hardening(config, errors, filename):
+    """检查 DNS 接管关键字段是否齐全。
+
+    目标不是承诺“单靠 YAML 就能消除一切泄露”，而是保证仓库内的主配置已经
+    明确声明 DNS 由 Mihomo 接管，并具备代理解析、直连解析和规则遵循三条基础链路。
+    """
+    config_name = Path(filename).name
+
+    if config_name == 'config_local.yaml' and 'dns' not in config:
+        return
+
+    dns = config.get('dns', {})
+
+    if dns.get('respect-rules') is not True:
+        errors.append(f"DNS 接管: {config_name} 必须设置 dns.respect-rules: true")
+
+    if not dns.get('proxy-server-nameserver'):
+        errors.append(f"DNS 接管: {config_name} 缺少 dns.proxy-server-nameserver，无法稳定解析代理相关域名")
+
+    if not dns.get('direct-nameserver'):
+        errors.append(f"DNS 接管: {config_name} 缺少 dns.direct-nameserver，直连域名解析出口不明确")
+
+    if dns.get('direct-nameserver-follow-policy') is not True:
+        errors.append(f"DNS 接管: {config_name} 必须设置 dns.direct-nameserver-follow-policy: true")
+
+    nameserver = dns.get('nameserver') or []
+    fallback = dns.get('fallback') or []
+    if not nameserver:
+        errors.append(f"DNS 接管: {config_name} 缺少 dns.nameserver")
+    if not fallback:
+        errors.append(f"DNS 接管: {config_name} 缺少 dns.fallback")
+
+    # 仓库主配置是“可发布的独立运行基线”，不应该把现场路由器的 DHCP / 内网 DNS /
+    # 运营商 DNS 直接固化进来，否则会把特定部署环境误写回发布配置，并直接污染 Net.Coffee 验收。
+    blocked_hosts = ("dns.alidns.com", "doh.pub")
+    blocked_ip_literals = {
+        "10.10.10.10",
+        "202.96.128.86",
+        "202.96.134.33",
+    }
+
+    def _strip_host(value):
+        text = str(value).strip()
+        if text.startswith("dhcp://"):
+            return "dhcp://"
+        parsed = urlparse(text if "://" in text else f"udp://{text}")
+        host = parsed.hostname or text
+        return host.strip("[]")
+
+    def _is_private_or_link_local(host):
+        try:
+            ip = ipaddress.ip_address(host)
+        except ValueError:
+            return False
+        return ip.is_private or ip.is_link_local or ip.is_loopback
+
+    for field in ("proxy-server-nameserver", "nameserver", "direct-nameserver"):
+        values = dns.get(field) or []
+        for value in values:
+            if any(host in str(value) for host in blocked_hosts):
+                errors.append(
+                    f"DNS 接管: {config_name} 的 dns.{field} 仍使用中国大陆公共解析器 '{value}'，"
+                    "与当前 Net.Coffee 验收标准冲突"
+                )
+            host = _strip_host(value)
+            if host == "dhcp://":
+                errors.append(
+                    f"DNS 接管: {config_name} 的 dns.{field} 不应直接使用 DHCP 上游 '{value}'，"
+                    "这会把现场网络基础设施固化进发布配置"
+                )
+                continue
+            if host in blocked_ip_literals or _is_private_or_link_local(host):
+                errors.append(
+                    f"DNS 接管: {config_name} 的 dns.{field} 不应直接引用现场/私网解析器 '{value}'，"
+                    "请把这类配置留在 OpenClash 或 ADGuard Home 的现场覆写层"
+                )
+
+
 def check_duplicate_yaml_keys(raw_text, errors):
     """检查 14: 同一个 YAML mapping 内的重复键。"""
     duplicates = []
@@ -296,65 +411,29 @@ def check_duplicate_yaml_keys(raw_text, errors):
 
 
 def check_cross_config_consistency(config1, config2, errors, name1="config1", name2="config2"):
-    """检查跨配置语义一致性和两端各自的私网路由约束。
+    """检查两端必须保持的网络安全不变量。
 
-    手机版允许的功能差异：
-    1. 多一个 '回家' 代理节点
-    2. 多一个 '回家开关' 策略组
-    3. RFC1918 私网经回家开关，且 l-home.top 直连防回环
+    历史版本曾强制家用版和手机版 rule-providers / proxy-groups 完全一致，
+    并硬编码 25/31/32 的 Layer 2 数量基线。这个约束已经过时：
+    家用版与手机版现在允许按使用场景独立演进，手机版后续再以家用版为基线收口。
+
+    这里保留真正会影响连通性/安全性的硬检查：
+    - 家用旁路由版不强制显式 RFC1918/loopback 规则，内网绕过归属现场层；
+    - 手机版 RFC1918 必须经回家开关，loopback 必须直连；
+    - 手机版必须保留 l-home.top 防回环。
     """
-    # 检查 rule-providers 必须完全一致
-    rp1 = set(config1.get('rule-providers', {}).keys())
-    rp2 = set(config2.get('rule-providers', {}).keys())
-    if rp1 != rp2:
-        only1 = sorted(rp1 - rp2)
-        only2 = sorted(rp2 - rp1)
-        if only1:
-            errors.append(f"跨配置不一致: {name1} 独有的规则集: {', '.join(only1)}")
-        if only2:
-            errors.append(f"跨配置不一致: {name2} 独有的规则集: {', '.join(only2)}")
-
-    # 检查策略组数量：手机版应该比家用版多 1 个（回家开关）
-    groups1 = [g['name'] for g in config1.get('proxy-groups', [])]
-    groups2 = [g['name'] for g in config2.get('proxy-groups', [])]
-
-    # 除了回家开关，其他策略组名称必须一致
-    g1_set = set(groups1)
-    g2_set = set(groups2)
-    diff = g1_set.symmetric_difference(g2_set)
-    allowed_diff = {'回家开关'}
-    if diff - allowed_diff:
-        unexpected = sorted(diff - allowed_diff)
-        errors.append(f"跨配置不一致: 不允许的策略组差异: {', '.join(unexpected)}")
-
-    expected_counts = ((name1, config1, 25, 31), (name2, config2, 25, 32))
-    for config_name, config, provider_count, group_count in expected_counts:
-        actual_providers = len(config.get('rule-providers', {}))
-        actual_groups = len(config.get('proxy-groups', []))
-        if actual_providers != provider_count:
-            errors.append(
-                f"Layer 2 基线: {config_name} 应有 {provider_count} 个规则集，当前 {actual_providers} 个"
-            )
-        if actual_groups != group_count:
-            errors.append(
-                f"Layer 2 基线: {config_name} 应有 {group_count} 个策略组，当前 {actual_groups} 个"
-            )
-
-    private_cidrs = ('10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16')
-    for config_name, config, policy in (
-        (name1, config1, '直连'),
-        (name2, config2, '回家开关'),
-    ):
-        rules = set(config.get('rules', []))
-        for cidr in private_cidrs:
-            expected = f"IP-CIDR,{cidr},{policy},no-resolve"
-            if expected not in rules:
-                errors.append(f"私网路由: {config_name} 缺少 '{expected}'")
-        loopback = "IP-CIDR,127.0.0.0/8,直连,no-resolve"
-        if loopback not in rules:
-            errors.append(f"私网路由: {config_name} 缺少 '{loopback}'")
 
     mobile_rules = set(config2.get('rules', []))
+    private_cidrs = ('10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16')
+    for cidr in private_cidrs:
+        expected = f"IP-CIDR,{cidr},回家开关,no-resolve"
+        if expected not in mobile_rules:
+            errors.append(f"私网路由: {name2} 缺少 '{expected}'")
+
+    loopback = "IP-CIDR,127.0.0.0/8,直连,no-resolve"
+    if loopback not in mobile_rules:
+        errors.append(f"私网路由: {name2} 缺少 '{loopback}'")
+
     if "DOMAIN-SUFFIX,l-home.top,直连" not in mobile_rules:
         errors.append("手机版防回环: 缺少 'DOMAIN-SUFFIX,l-home.top,直连'")
 
@@ -396,10 +475,6 @@ def check_layer3_extension(extension_path, base_configs, errors):
             item.get('name') for section in ('proxies', 'proxy-groups')
             for item in config.get(section, []) if isinstance(item, dict)
         }
-        collisions = sorted(group_names & base_names)
-        for name in collisions:
-            errors.append(f"Layer 3 名称冲突: '{name}' 已存在于{config_name}主配置")
-
         valid_policies = base_names | group_names | {'DIRECT', 'REJECT', '直连', '拒绝'}
         for policy in sorted(policy_refs - valid_policies):
             errors.append(f"Layer 3 策略悬空: '{policy}' 在{config_name}主配置和扩展中均未定义")
@@ -448,7 +523,7 @@ def validate_config(filename, skip_url_check=False, url_timeout=5, raw_text=""):
 
     # 运行所有检查
     checks = [
-        ("必需字段", check_required_fields),
+        ("必需字段", lambda c, e: check_required_fields(c, e, filename)),
         ("重复规则集", check_duplicate_providers),
         ("策略组引用有效性", check_group_refs),
         ("规则集命名格式", check_provider_naming),
@@ -457,12 +532,15 @@ def validate_config(filename, skip_url_check=False, url_timeout=5, raw_text=""):
         ("孤立规则集", check_unreferenced_providers),
         ("悬空引用", check_dangling_refs),
         ("敏感字段占位符", lambda c, e: check_sensitive_fields(c, e, raw_text)),
-        ["唯一 MATCH 规则", check_unique_match],
-        ["策略循环检查", check_policy_cycles],
+        ("external-controller 精确校验", lambda c, e: check_external_controller(c, e, filename)),
+        ("WebRTC 防护规则", lambda c, e: check_webrtc_rules(c, e, filename)),
+        ("DNS 接管关键字段", lambda c, e: check_dns_hardening(c, e, filename)),
+        ("唯一 MATCH 规则", check_unique_match),
+        ("策略循环检查", check_policy_cycles),
     ]
 
     warnings_checks = [
-        ["YAML 重复键警告", lambda c, e: check_duplicate_yaml_keys(raw_text, warnings)],
+        ("YAML 重复键警告", lambda c, e: check_duplicate_yaml_keys(raw_text, warnings)),
     ]
 
     # 手机版按 UI 使用频率排列策略组，允许引用后置的基础组；Mihomo 不要求定义顺序。

@@ -38,6 +38,7 @@ DOMAIN-SUFFIX,browserscan.net
 DOMAIN-SUFFIX,surfshark.com
 DOMAIN-SUFFIX,surfsharkdns.com
 DOMAIN-SUFFIX,ip-api.com
+DOMAIN-SUFFIX,whatsmydns.me
 
 DOMAIN-SUFFIX,ipleak.net
 DOMAIN-SUFFIX,ip-score.com
@@ -67,6 +68,7 @@ DOMAIN-SUFFIX,whoisip.me
 DOMAIN-SUFFIX,ipaddress.me
 DOMAIN-SUFFIX,ip2proxy.com
 DOMAIN-SUFFIX,vpnapi.io
+DOMAIN-SUFFIX,arin.net
 
 IP-CIDR,74.125.250.129/24,no-resolve
 
