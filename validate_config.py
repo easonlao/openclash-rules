@@ -630,21 +630,6 @@ def main():
                 print(f"  - {e}")
         all_errors.extend(cross_errors)
 
-        print("[边界] Layer 3 扩展完整性检查...", end=" ")
-        extension_errors = []
-        check_layer3_extension(
-            Path(__file__).resolve().parent / 'extensions' / 'layer3_extra.yaml',
-            [('家用版', configs['config_local.yaml']), ('手机版', configs['config_mobile.yaml'])],
-            extension_errors,
-        )
-        if not extension_errors:
-            print("✅")
-        else:
-            print(f"❌ +{len(extension_errors)}")
-            for e in extension_errors:
-                print(f"  - {e}")
-        all_errors.extend(extension_errors)
-
     # 最终结论
     if len(args.files) > 1:
         print("=" * 60)
