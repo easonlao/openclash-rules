@@ -5,7 +5,7 @@
 | 文件 | 使用场景 |
 |---|---|
 | `config_local.yaml` | 家里软路由 / OpenClash 使用 |
-| `config_mobile.yaml` | 手机 Clash Meta / Clash Mi 使用，带“回家”能力 |
+| `config_simple_mobile.yaml` | 手机 Clash Meta / Clash Mi 简化版，带“回家”能力 |
 
 当前目标很简单：**稳定可用、出口可控、少折腾**。默认不追求大而全模板，也不默认加载低频规则。
 
@@ -20,7 +20,7 @@
 
 | 内容 | 放哪里 |
 |---|---|
-| 节点、策略组、规则引用 | `config_local.yaml` / `config_mobile.yaml` |
+| 节点、策略组、规则引用 | `config_local.yaml` / `config_simple_mobile.yaml` |
 | DNS、fake-ip、nameserver、监听地址 | OpenClash / ClashMi 覆写页面 |
 | 个性化强制代理 | `list/Proxy.list` |
 | 个性化强制直连 | `list/Direct.list` |
@@ -56,7 +56,7 @@ proxies:
 
 ### 3. 手机版额外填回家密码
 
-只改 `config_mobile.yaml`：
+只改 `config_simple_mobile.yaml`：
 
 ```yaml
 proxies:
@@ -82,7 +82,7 @@ proxies:
 
 ### 手机版
 
-导入 `config_mobile.yaml` 到手机 Clash 客户端。
+导入 `config_simple_mobile.yaml` 到手机 Clash 客户端。
 
 日常主要看两个策略组：
 
@@ -156,7 +156,7 @@ python3 tools/validate_openclash_wiki.py
 | 路径 | 说明 |
 |---|---|
 | `config_local.yaml` | 家用 OpenClash 配置 |
-| `config_mobile.yaml` | 手机 Clash 配置 |
+| `config_simple_mobile.yaml` | 手机 Clash 简化版配置 |
 | `list/` | 当前配置直接引用的少量本地补丁规则 |
 
 ## 安全提醒
