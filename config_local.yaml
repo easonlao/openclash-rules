@@ -165,7 +165,7 @@ rules:
   - RULE-SET,Perplexity / Domain,人工智能
 
   - RULE-SET,Google / Domain,谷歌
-  - RULE-SET,Google / IP,谷歌
+  - RULE-SET,Google / IP,谷歌,no-resolve
 
   - RULE-SET,Microsoft / Domain,微软
   - RULE-SET,Apple / Domain,苹果

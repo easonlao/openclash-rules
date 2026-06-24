@@ -425,7 +425,7 @@ rules:
 - RULE-SET,Grok / Domain,人工智能
 # 科技公司
 - RULE-SET,Google / Domain,谷歌
-- RULE-SET,Google / IP,谷歌
+- RULE-SET,Google / IP,谷歌,no-resolve
 - RULE-SET,Microsoft / Domain,微软
 - RULE-SET,Apple / Domain,苹果
 - RULE-SET,Apple-CN / Domain,苹果
@@ -440,7 +440,7 @@ rules:
 # 流媒体
 - RULE-SET,TikTok / Domain,流媒体
 - RULE-SET,Netflix / Domain,流媒体
-- RULE-SET,Netflix / IP,流媒体
+- RULE-SET,Netflix / IP,流媒体,no-resolve
 - RULE-SET,Disney / Domain,流媒体
 - RULE-SET,HBO / Domain,流媒体
 - RULE-SET,Spotify / Domain,流媒体
@@ -454,6 +454,6 @@ rules:
 - RULE-SET,Direct / Domain,国内
 - RULE-SET,Private / Domain,国内
 - RULE-SET,China / Domain,国内
-- RULE-SET,China / IP,国内
+- RULE-SET,China / IP,国内,no-resolve
 # 最终兜底（必须最后）
 - MATCH,其他
