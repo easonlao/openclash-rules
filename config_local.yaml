@@ -58,7 +58,7 @@ proxy-groups:
   # ======= 机场底层组（按地区归类） =======
   - name: 香港
     type: url-test
-    url: http://www.gstatic.com/generate_204
+    url: https://www.gstatic.com/generate_204
     interval: 180
     tolerance: 60
     filter: (?=.*(广港|香港|HK|Hong Kong|🇭🇰|HongKong)).*$
@@ -67,7 +67,7 @@ proxy-groups:
 
   - name: 台湾
     type: url-test
-    url: http://www.gstatic.com/generate_204
+    url: https://www.gstatic.com/generate_204
     interval: 180
     tolerance: 60
     filter: (?=.*(广台|台湾|台灣|TW|Tai Wan|🇹🇼|TaiWan|Taiwan)).*$
@@ -76,7 +76,7 @@ proxy-groups:
 
   - name: 日本
     type: url-test
-    url: http://www.gstatic.com/generate_204
+    url: https://www.gstatic.com/generate_204
     interval: 180
     tolerance: 120
     filter: (?=.*(广日|日本|JP|川日|东京|大阪|泉日|埼玉|沪日|深日|🇯🇵|Japan)).*$
@@ -85,7 +85,7 @@ proxy-groups:
 
   - name: 新加坡
     type: url-test
-    url: http://www.gstatic.com/generate_204
+    url: https://www.gstatic.com/generate_204
     interval: 180
     tolerance: 80
     filter: (?=.*(广新|新加坡|SG|坡|狮城|🇸🇬|Singapore)).*$
@@ -94,7 +94,7 @@ proxy-groups:
 
   - name: 美国
     type: url-test
-    url: http://www.gstatic.com/generate_204
+    url: https://www.gstatic.com/generate_204
     interval: 180
     tolerance: 250
     filter: (?=.*(广美|US|美国|纽约|波特兰|达拉斯|俄勒|凤凰城|费利蒙|洛杉|圣何塞|圣克拉|西雅|芝加|🇺🇸|United States)).*$

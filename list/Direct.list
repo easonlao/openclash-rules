@@ -28,18 +28,18 @@ DOMAIN-SUFFIX,easou.com
 DOMAIN-SUFFIX,koowo.com
 DOMAIN-SUFFIX,tmiaoo.com
 
-#指令使用了关键字直连，只要网址带有 m-team 即会直连，推荐使用
-- DOMAIN-KEYWORD,m-team,DIRECT
+# 指令使用关键字匹配，只要网址带有 m-team 即会命中
+DOMAIN-KEYWORD,m-team
 
-#指令使用了主域名直連，不論子域名為何皆為直連，有兩條紀錄是因為擁有兩個入口網址
-- DOMAIN-SUFFIX,m-team.cc,DIRECT
-- DOMAIN-SUFFIX,m-team.io,DIRECT
-- DOMAIN-SUFFIX,manfuz.co,DIRECT
+# 指令使用主域名匹配，不论子域名为何皆会命中
+DOMAIN-SUFFIX,m-team.cc
+DOMAIN-SUFFIX,m-team.io
+DOMAIN-SUFFIX,manfuz.co
 
-#指令使用了指定域名直連，只要網址是指定的域名才會直連，不推薦使用(因为域名可能会不定期更新)
-- DOMAIN,tracker.m-team.cc,DIRECT
-- DOMAIN,tracker.m-team.io,DIRECT
-- DOMAIN,tra1.m-team.cc,DIRECT
-- DOMAIN,tra1.m-team.io,DIRECT
-- DOMAIN,tra99.manfuz.co,DIRECT
+# 指令使用指定域名匹配，只在域名固定时命中
+DOMAIN,tracker.m-team.cc
+DOMAIN,tracker.m-team.io
+DOMAIN,tra1.m-team.cc
+DOMAIN,tra1.m-team.io
+DOMAIN,tra99.manfuz.co
 
