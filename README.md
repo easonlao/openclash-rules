@@ -96,31 +96,20 @@ proxies:
 - 不要把真实订阅链接、住宅账号密码、回家密码提交到公开仓库。
 - 不要直接在主路由上试错 reload；先本地验证，再上线。
 
-## 验证配置
+## 基础语法检查
 
-修改配置后，在仓库目录运行：
+这个发布目录默认不再内置项目维护脚本。
 
-```bash
-python3 validate_config.py --skip-url
-```
-
-发布前再运行完整检查：
-
-```bash
-python3 validate_config.py
-```
-
-验证失败不要发布。
+修改配置后，至少先用本地 Mihomo / Clash Meta 核心做一次 `-t` 检查，确认 YAML 可以被核心加载；运行态效果仍需再做隔离验证和 `Net.Coffee` 复验。
 
 ## 上线前建议
 
 影响家里主网络的改动，建议按这个顺序：
 
-1. 本地运行 `python3 validate_config.py --skip-url`。
-2. 必要时跑完整 URL 检查。
-3. 在隔离环境或备用环境确认配置能启动。
-4. 再导入 OpenClash / 手机客户端。
-5. 上线后重新检查 IP、DNS、WebRTC 是否符合预期。
+1. 先用本地 Mihomo / Clash Meta 核心执行 `-t`。
+2. 在隔离环境或备用环境确认配置能启动。
+3. 再导入 OpenClash / 手机客户端。
+4. 上线后重新检查 IP、DNS、WebRTC 是否符合预期。
 
 可用的在线检查入口：
 
@@ -149,8 +138,6 @@ python3 validate_config.py
 | `config_local.yaml` | 家用 OpenClash 配置 |
 | `config_mobile.yaml` | 手机 Clash 配置 |
 | `list/` | 当前配置直接引用的少量本地补丁规则 |
-| `validate_config.py` | 发布前验证脚本 |
-| `requirements.txt` | 验证脚本依赖 |
 
 ## 安全提醒
 

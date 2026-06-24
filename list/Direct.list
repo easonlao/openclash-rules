@@ -27,3 +27,24 @@ DOMAIN-SUFFIX,cn163.net
 DOMAIN-SUFFIX,easou.com
 DOMAIN-SUFFIX,koowo.com
 DOMAIN-SUFFIX,tmiaoo.com
+
+#指令使用了关键字直连，只要网址带有 m-team 即会直连，推荐使用
+- DOMAIN-KEYWORD,m-team,DIRECT
+
+#指令使用了主域名直連，不論子域名為何皆為直連，有兩條紀錄是因為擁有兩個入口網址
+- DOMAIN-SUFFIX,m-team.cc,DIRECT
+- DOMAIN-SUFFIX,m-team.io,DIRECT
+- DOMAIN-SUFFIX,manfuz.co,DIRECT
+
+#指令使用了指定域名直連，只要網址是指定的域名才會直連，不推薦使用(因为域名可能会不定期更新)
+- DOMAIN,tracker.m-team.cc,DIRECT
+- DOMAIN,tracker.m-team.io,DIRECT
+- DOMAIN,tra1.m-team.cc,DIRECT
+- DOMAIN,tra1.m-team.io,DIRECT
+- DOMAIN,tra99.manfuz.co,DIRECT
+
+#局域网
+- IP-CIDR,10.0.0.0/8,DIRECT,no-resolve
+- IP-CIDR,192.168.0.0/16,DIRECT,no-resolve
+- IP-CIDR,127.0.0.0/8,DIRECT,no-resolve
+- IP-CIDR,172.16.0.0/12,DIRECT,no-resolve
