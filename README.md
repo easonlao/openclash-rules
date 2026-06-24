@@ -11,9 +11,21 @@
 
 ## 当前状态
 
-- 本地版已完成实机收口：`DNS` 不泄露，`Claude` 和 `ChatGPT` 已测试可用。
-- 手机版已恢复回家访问：外网下可通过“回家开关”访问家庭内网。
-- 后续任何改动，都应先保证这两个结果不回退。
+- 家用版已完成实机收口：`DNS` 不泄露，`Claude` 和 `ChatGPT` 已测试可用。
+- 手机版已收敛为 simple 基线，只保留“回家”能力，不再维护手机完整版。
+- 两份发布 YAML 都不内置 DNS 细节；DNS / fake-ip / nameserver 交给 OpenClash 或 ClashMi 的覆写页面处理。
+- 后续任何改动，都应先保证这些结果不回退。
+
+## 配置职责边界
+
+| 内容 | 放哪里 |
+|---|---|
+| 节点、策略组、规则引用 | `config_local.yaml` / `config_mobile.yaml` |
+| DNS、fake-ip、nameserver、监听地址 | OpenClash / ClashMi 覆写页面 |
+| 个性化强制代理 | `list/Proxy.list` |
+| 个性化强制直连 | `list/Direct.list` |
+
+`no-resolve` 继续用于 IP 规则，避免为了匹配 IP 规则额外解析域名；但它不是单独的 DNS 防泄露方案。DNS 是否符合预期仍看最终运行态和测试结果。
 
 ## 使用前需要改哪里
 
@@ -116,7 +128,8 @@ python3 tools/validate_openclash_wiki.py
 1. 先用本地 Mihomo / Clash Meta 核心执行 `-t`。
 2. 在隔离环境或备用环境确认配置能启动。
 3. 再导入 OpenClash / 手机客户端。
-4. 上线后重新检查 IP、DNS、WebRTC 是否符合预期。
+4. 通过 OpenClash / ClashMi 覆写页面设置 DNS / fake-ip 等运行态选项。
+5. 上线后重新检查 IP、DNS、WebRTC 是否符合预期。
 
 可用的在线检查入口：
 
