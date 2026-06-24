@@ -17,23 +17,13 @@ dns:
   ipv6: true
   respect-rules: true
   proxy-server-nameserver:
-    - https://1.1.1.1/dns-query
-    - https://dns.google/dns-query
-  default-nameserver:
-    - 1.1.1.1
-    - 8.8.8.8
+    - 223.5.5.5
+    - 114.114.114.114
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
   nameserver:
-    - https://1.1.1.1/dns-query
-    - https://dns.google/dns-query
-  direct-nameserver:
-    - https://1.1.1.1/dns-query
-    - https://dns.google/dns-query
-  direct-nameserver-follow-policy: true
-  fallback:
-    - https://1.1.1.1/dns-query
-    - https://8.8.8.8/dns-query
+    - 223.5.5.5
+    - 114.114.114.114
   fallback-filter:
     geoip: true
     geoip-code: CN
