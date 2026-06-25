@@ -137,8 +137,6 @@ rule-anchor:
     &class { type: http, interval: 86400, behavior: classical, format: text }
 
 rules:
-  - IP-CIDR,127.0.0.0/8,直连,no-resolve
-  - DOMAIN-SUFFIX,l-home.top,直连
   - RULE-SET,ChatGPT / Domain,人工智能
   - RULE-SET,Claude / Domain,人工智能
   - RULE-SET,Copilot / Domain,人工智能

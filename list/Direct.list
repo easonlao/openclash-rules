@@ -1,5 +1,9 @@
 # Direct / Domain 仅承担补充层：
-# 只保留 China / Domain 未覆盖、但仍需直连的少量国内补丁。
+# 只保留 China / Domain 未覆盖、但仍需直连的少量国内补丁，
+# 以及像 l-home.top 这类需要全端共享的结构性直连规则。
+
+# 结构性直连 / 防回环
+DOMAIN-SUFFIX,l-home.top
 
 # 基础服务 / 更新 / 静态资源
 DOMAIN-SUFFIX,time.windows.com
@@ -42,4 +46,3 @@ DOMAIN,tracker.m-team.io
 DOMAIN,tra1.m-team.cc
 DOMAIN,tra1.m-team.io
 DOMAIN,tra99.manfuz.co
-

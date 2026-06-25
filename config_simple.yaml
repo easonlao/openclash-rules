@@ -1,17 +1,11 @@
 # =========================================================
 # OpenClash 自用配置（极简基线）
-# 基于 Hans 链式代理模板，精简适配单住宅IP场景
 # 适用：OpenClash（Mihomo 内核）/ iStoreOS 软路由
+# 运行态（DNS / 模式 / 端口 / 控制面）交给 OpenClash 设置页
 # =========================================================
 
-# ──────────────── 基础设置 ────────────────
-mixed-port: 7890
-allow-lan: true
-bind-address: "*"
-mode: rule
 log-level: info
 ipv6: true
-external-controller: :9090
 
 proxy-providers:
   聚合机场:

@@ -122,7 +122,7 @@ proxies:
 
 修改配置后，至少先用本地 Mihomo / Clash Meta 核心做一次 `-t` 检查，确认 YAML 可以被核心加载；运行态效果仍需再做隔离验证和 `Net.Coffee` 复验。
 
-如果你在维护项目本身，还可以运行项目级工具目录里的两个脚本：
+如果你是在 OrbitOS 项目工作区里维护本项目，请回到项目根目录 `03-项目/openclash-config/`，再运行项目级 `tools/` 目录里的两个脚本：
 
 ```bash
 python3 tools/validate_config.py
