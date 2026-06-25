@@ -147,6 +147,7 @@ rule-anchor:
     &class { type: http, interval: 86400, behavior: classical, format: text }
 
 rules:
+  - RULE-SET,AD-RULE / Domain,拒绝
   - RULE-SET,ChatGPT / Domain,人工智能
   - RULE-SET,Sex / Domain,颜色
   - RULE-SET,Test / Domain,测试
@@ -196,6 +197,11 @@ rules:
   - MATCH,其他
 
 rule-providers:
+  AD-RULE / Domain:
+    {
+      <<: *domain,
+      url: "https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Clash.mrs",
+    }
   Test / Domain:
     {
       <<: *class,
