@@ -1,16 +1,8 @@
 # =========================================================
 # OpenClash 自用配置（手机极简基线）
-# 基于 config_simple.yaml 增加手机版回家能力
-# 适用：Clash Meta for Android
+# 适用：ClashMi / Clash Meta
+# 运行态（DNS / TUN / IPv6 / 端口）交给 ClashMi 设置页
 # =========================================================
-
-mixed-port: 7890
-allow-lan: false
-bind-address: 127.0.0.1
-mode: rule
-log-level: info
-ipv6: true
-external-controller: 127.0.0.1:9090
 
 proxy-providers:
   聚合机场:
@@ -30,6 +22,9 @@ proxies:
     port: 12320
     cipher: aes-256-gcm
     password: "你的SS密码"
+    udp: true
+    dialer-proxy: 直连
+    ip-version: ipv6
   - name: 住宅-socks5
     type: socks5
     server: "你的住宅IP地址"
@@ -45,25 +40,18 @@ proxies:
 default: &default
   type: select
   proxies:
-    - 回家开关
     - 通用选择
-    - 美国
     - 新加坡
+    - 香港
     - 台湾
     - 日本
-    - 香港
+    - 美国
     - 全部
     - 住宅-socks5
     - 直连
     - 拒绝
 
 proxy-groups:
-  - name: 回家开关
-    type: select
-    proxies:
-      - 通用选择
-      - 回家
-
   - name: 香港
     type: url-test
     url: https://www.gstatic.com/generate_204
@@ -117,6 +105,7 @@ proxy-groups:
   - name: 通用选择
     type: select
     proxies:
+      - 回家
       - 新加坡
       - 香港
       - 台湾
@@ -148,9 +137,6 @@ rule-anchor:
     &class { type: http, interval: 86400, behavior: classical, format: text }
 
 rules:
-  - IP-CIDR,10.0.0.0/8,回家开关,no-resolve
-  - IP-CIDR,172.16.0.0/12,回家开关,no-resolve
-  - IP-CIDR,192.168.0.0/16,回家开关,no-resolve
   - IP-CIDR,127.0.0.0/8,直连,no-resolve
   - DOMAIN-SUFFIX,l-home.top,直连
   - RULE-SET,ChatGPT / Domain,人工智能
