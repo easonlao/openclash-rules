@@ -31,6 +31,7 @@ DOMAIN-SUFFIX,cn163.net
 DOMAIN-SUFFIX,easou.com
 DOMAIN-SUFFIX,koowo.com
 DOMAIN-SUFFIX,tmiaoo.com
+DOMAIN-SUFFIX,mykeeta.com
 
 # 指令使用关键字匹配，只要网址带有 m-team 即会命中
 DOMAIN-KEYWORD,m-team
