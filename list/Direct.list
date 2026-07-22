@@ -33,6 +33,7 @@ DOMAIN-SUFFIX,koowo.com
 DOMAIN-SUFFIX,tmiaoo.com
 DOMAIN-SUFFIX,mykeeta.com
 DOMAIN-SUFFIX,longcat.chat
+DOMAIN-SUFFIX,mlaiuncs.com
 
 # 指令使用关键字匹配，只要网址带有 m-team 即会命中
 DOMAIN-KEYWORD,m-team
