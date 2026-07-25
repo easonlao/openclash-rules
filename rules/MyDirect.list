@@ -1,0 +1,6 @@
+# 结构性直连 / 防回环
+DOMAIN-SUFFIX,l-home.top
+
+# 长猫 AI（直连，不走代理）
+DOMAIN-SUFFIX,longcat.chat
+DOMAIN-SUFFIX,api.longcat.chat
