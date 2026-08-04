@@ -5,6 +5,9 @@
 # 结构性直连 / 防回环
 DOMAIN-SUFFIX,l-home.top
 
+# AI 服务直连（付费订阅走直连，避免 Fake-IP 导致响应丢包）
+DOMAIN-SUFFIX,opencode.ai
+
 # 基础服务 / 更新 / 静态资源
 DOMAIN-SUFFIX,time.windows.com
 DOMAIN-SUFFIX,qhupdate.com
